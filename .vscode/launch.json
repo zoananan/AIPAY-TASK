@@ -1,0 +1,50 @@
+{
+    // VS Code「运行和调试」面板里的一键运行配置。cwd 都是仓库根目录。
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "0. 单元测试（不需要模型）",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "unittest",
+            "args": ["discover", "-s", "experiments/bezos_graham/tests", "-v"],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "1. 单次谈判 - mock（不需要模型）",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/experiments/bezos_graham/run_episode.py",
+            "args": ["--backend", "mock", "--show-prompt"],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "2. 下载 Qwen3-4B-Instruct-2507（只需一次，需联网）",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/experiments/bezos_graham/download_model.py",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "3. 单次谈判 - Qwen3-4B 离线",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/experiments/bezos_graham/run_episode.py",
+            "args": ["--show-prompt"],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "4. A0 基线 10 次独立运行 - Qwen3-4B 离线",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/experiments/bezos_graham/run_experiments.py",
+            "args": ["--runs", "10", "--tag", "A0_paper_default", "--quiet"],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal"
+        }
+    ]
+}

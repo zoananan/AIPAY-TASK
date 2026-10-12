@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# 本地模型权重（约 8 GB，不进仓库）
+models/
+
+# 实验输出（如需提交某次结果，可用 git add -f 单独加入）
+experiments/bezos_graham/outputs/
