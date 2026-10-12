@@ -12,8 +12,8 @@
 ## 快速开始
 
 ```bash
-git clone -b claude/eager-hypatia-8txpol --recurse-submodules https://github.com/zoananan/aipay-task.git
-cd aipay-task
+git clone -b claude/eager-hypatia-8txpol --recurse-submodules https://github.com/zoananan/AIPAY-TASK.git
+cd AIPAY-TASK
 python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\Activate.ps1
 pip install -r requirements.txt                         # 先按 pytorch.org 装好匹配 CUDA 的 torch
 
