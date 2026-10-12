@@ -137,6 +137,7 @@ def apply_cli_overrides(cfg: ExperimentConfig, args: Any) -> ExperimentConfig:
         "max_rounds": "max_rounds",
         "base_seed": "base_seed",
         "temperature": "temperature",
+        "max_new_tokens": "max_new_tokens",
         "output_dir": "output_dir",
         "buyer_template": "buyer_template",
         "seller_template": "seller_template",
@@ -168,6 +169,7 @@ def add_common_cli_args(parser: Any) -> None:
     parser.add_argument("--seed", dest="base_seed", type=int, help="基础随机种子")
     parser.add_argument("--temperature", type=float)
     parser.add_argument("--greedy", action="store_true", help="论文协议：temperature=0 确定性解码")
+    parser.add_argument("--max-new-tokens", dest="max_new_tokens", type=int, help="每次回复最多生成的 token 数（论文 1024）")
     parser.add_argument("--paper-names", dest="paper_names", action="store_true",
                         help="角色名用 Buyer/Seller（与 Table 14/15 逐字一致）")
     parser.add_argument("--no-round-fix", dest="no_round_fix", action="store_true",

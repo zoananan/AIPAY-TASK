@@ -19,6 +19,9 @@ from model_adapter import build_model
 
 
 def main() -> None:
+    # 上游 render() 会打印 ✓/✗；Windows 中文控制台在输出被重定向时可能无法编码，替换掉而不是报错
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(errors="replace")
     parser = argparse.ArgumentParser(description="Bezos vs Graham: one AgenticPay negotiation")
     parser.add_argument("--run-id", dest="run_id", type=int, default=0, help="seed = base_seed + run_id")
     parser.add_argument("--show-prompt", dest="show_prompt", action="store_true")

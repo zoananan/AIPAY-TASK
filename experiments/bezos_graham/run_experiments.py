@@ -50,6 +50,9 @@ def print_summary(tag: str, s: dict) -> None:
 
 
 def main(argv: Optional[List[str]] = None, default_runs: int = 10) -> dict:
+    # 上游 render() 会打印 ✓/✗；Windows 中文控制台在输出被重定向时可能无法编码，替换掉而不是报错
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(errors="replace")
     parser = argparse.ArgumentParser(description="Bezos vs Graham: N independent AgenticPay negotiations")
     parser.add_argument("--runs", type=int, default=default_runs, help="独立运行次数（默认 10）")
     parser.add_argument("--start-run", dest="start_run", type=int, default=0,
