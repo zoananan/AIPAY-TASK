@@ -8,3 +8,6 @@ venv/
 
 # 实验输出（如需提交某次结果，可用 git add -f 单独加入）
 experiments/bezos_graham/outputs/
+
+# 打包文件
+*.zip
