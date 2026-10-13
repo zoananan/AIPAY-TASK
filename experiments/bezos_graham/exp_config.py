@@ -22,7 +22,7 @@ EXP_DIR = Path(__file__).resolve().parent              # experiments/bezos_graha
 REPO_ROOT = EXP_DIR.parent.parent                       # 仓库根目录
 PROMPT_DIR = EXP_DIR / "prompts"
 
-# AgenticPay 官方源码位置（git submodule，固定在论文对应提交 1a347cf）。
+# AgenticPay 官方源码位置（论文对应提交 1a347cf 的原样拷贝，随项目提供）。
 # 如放在别处，可设置环境变量 AGENTICPAY_ROOT 覆盖。
 AGENTICPAY_ROOT = Path(os.environ.get("AGENTICPAY_ROOT", REPO_ROOT / "third_party" / "AgenticPay"))
 AGENTICPAY_PAPER_COMMIT = "1a347cf"

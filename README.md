@@ -12,7 +12,9 @@
 ## 快速开始
 
 ```bash
-git clone -b claude/eager-hypatia-8txpol --recurse-submodules https://github.com/zoananan/AIPAY-TASK.git
+# 方式一：git clone（需要能访问 GitHub）
+git clone -b claude/eager-hypatia-8txpol https://github.com/zoananan/AIPAY-TASK.git
+# 方式二：GitHub 网页切到该分支 → Code → Download ZIP，解压（官方代码已包含在 third_party/ 中）
 cd AIPAY-TASK
 python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\Activate.ps1
 pip install -r requirements.txt                         # 先按 pytorch.org 装好匹配 CUDA 的 torch
@@ -30,7 +32,7 @@ VS Code 用户可直接使用「运行和调试」面板中的 5 个预设配置
 ## 目录
 
 ```
-third_party/AgenticPay/     官方源码（submodule，固定在论文版本 1a347cf，未修改）
+third_party/AgenticPay/     官方源码原样拷贝（论文版本 1a347cf，未修改，见 VENDORED.md）
 experiments/bezos_graham/   本任务的实验代码、prompt 模板、测试
 docs/                       说明文档
 ```
