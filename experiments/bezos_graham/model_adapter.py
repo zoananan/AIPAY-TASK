@@ -36,9 +36,10 @@ def _messages(prompt: str) -> List[Dict[str, str]]:
 class QwenHFLLM(BaseLLM):
     """transformers 后端（本地目录加载，可完全离线）。"""
 
-    def __init__(self, model_path: str, device: str = "auto", offline: bool = True):
+    def __init__(self, model_path: str, device: str = "auto", offline: bool = True, dtype: str = "auto"):
         self.model_path = model_path
         self.device_pref = device
+        self.dtype_pref = dtype
         self.offline = offline
         self._tok = None
         self._model = None
@@ -72,8 +73,11 @@ class QwenHFLLM(BaseLLM):
             device = self.device_pref
 
         # transformers 4.56 起把 torch_dtype 改名为 dtype
+        # dtype："auto" = 模型自带的 bfloat16。很多 CPU 没有 bf16 硬件指令，跑 bf16 反而很慢，
+        # 这时用 --dtype float32 通常快好几倍（代价是内存翻倍：4B 模型约 16 GB）。
+        dtype = "auto" if self.dtype_pref == "auto" else getattr(torch, self.dtype_pref)
         major, minor = (int(x) for x in transformers.__version__.split(".")[:2])
-        dtype_kw = {"dtype": "auto"} if (major, minor) >= (4, 56) else {"torch_dtype": "auto"}
+        dtype_kw = {"dtype": dtype} if (major, minor) >= (4, 56) else {"torch_dtype": dtype}
 
         print(f"[model] loading {self.model_path} on {device} (transformers {transformers.__version__}) ...")
         t0 = time.time()
@@ -226,7 +230,7 @@ class MockNegotiatorLLM(BaseLLM):
 def build_model(cfg: ExperimentConfig) -> BaseLLM:
     """按配置创建模型。买卖双方共享同一个模型对象（任务要求：同一个 LLM 扮演双方）。"""
     if cfg.backend == "hf":
-        return QwenHFLLM(cfg.model_path, device=cfg.device, offline=cfg.offline)
+        return QwenHFLLM(cfg.model_path, device=cfg.device, offline=cfg.offline, dtype=cfg.dtype)
     if cfg.backend == "vllm":
         return QwenVLLMLLM(cfg.model_path, offline=cfg.offline)
     if cfg.backend == "mock":

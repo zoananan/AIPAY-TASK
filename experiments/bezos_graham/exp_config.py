@@ -106,6 +106,7 @@ class ExperimentConfig:
     backend: str = "hf"                     # "hf"（transformers，Win/Mac/Linux 通用）| "vllm"（仅 Linux+GPU）| "mock"（无模型自检）
     model_path: str = str(DEFAULT_MODEL_PATH)
     device: str = "auto"                    # auto | cuda | mps | cpu
+    dtype: str = "auto"                     # auto（模型自带 bf16）| float32（CPU 上通常更快）| bfloat16 | float16
     offline: bool = True                    # True：禁止联网，只从本地目录加载模型
     output_dir: str = str(DEFAULT_OUTPUT_DIR)
     verbose: bool = True                    # 是否在终端打印每轮对话
@@ -133,6 +134,7 @@ def apply_cli_overrides(cfg: ExperimentConfig, args: Any) -> ExperimentConfig:
         "backend": "backend",
         "model_path": "model_path",
         "device": "device",
+        "dtype": "dtype",
         "initial_price": "initial_asking_price",
         "max_rounds": "max_rounds",
         "base_seed": "base_seed",
@@ -164,6 +166,8 @@ def add_common_cli_args(parser: Any) -> None:
     parser.add_argument("--backend", choices=["hf", "vllm", "mock"], help="推理后端（默认 hf）")
     parser.add_argument("--model-path", dest="model_path", help="本地模型目录")
     parser.add_argument("--device", choices=["auto", "cuda", "mps", "cpu"])
+    parser.add_argument("--dtype", choices=["auto", "float32", "bfloat16", "float16"],
+                        help="模型精度；CPU 上 bf16 很慢时试 float32（需约 16 GB 内存）")
     parser.add_argument("--initial-price", dest="initial_price", type=float, help="卖方初始要价（百万美元）")
     parser.add_argument("--max-rounds", dest="max_rounds", type=int)
     parser.add_argument("--seed", dest="base_seed", type=int, help="基础随机种子")

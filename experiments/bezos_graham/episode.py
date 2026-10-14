@@ -105,6 +105,11 @@ def run_episode(cfg: ExperimentConfig, model: BaseLLM, run_idx: int, out_dir: Pa
         done = terminated or truncated
         if cfg.verbose:
             print(env.render(mode="text"))               # [上游] 每轮的对话与价格摘要
+        else:
+            # --quiet 时也打印一行进度，避免长时间没有输出看起来像卡住
+            secs = sum(t["gen"].get("seconds", 0) for t in turns[-2:])
+            print(f"    run {run_idx} round {round_idx + 1}: buyer={turns[-2]['env_parsed_price']} "
+                  f"seller={turns[-1]['env_parsed_price']} ({secs:.0f}s)", flush=True)
 
     elapsed = time.time() - t_start
     agreed = info["status"] == "agreed"
