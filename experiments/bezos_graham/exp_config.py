@@ -103,7 +103,7 @@ class ExperimentConfig:
     })
 
     # ---------------- 模型/运行 ----------------
-    backend: str = "hf"                     # "hf"（transformers，Win/Mac/Linux 通用）| "vllm"（仅 Linux+GPU）| "mock"（无模型自检）
+    backend: str = "hf"                     # "hf"（transformers）| "gguf"（llama.cpp，CPU 推荐）| "vllm"（仅 Linux+GPU）| "mock"（无模型自检）
     model_path: str = str(DEFAULT_MODEL_PATH)
     device: str = "auto"                    # auto | cuda | mps | cpu
     dtype: str = "auto"                     # auto（模型自带 bf16）| float32（CPU 上通常更快）| bfloat16 | float16
@@ -163,7 +163,8 @@ def apply_cli_overrides(cfg: ExperimentConfig, args: Any) -> ExperimentConfig:
 
 
 def add_common_cli_args(parser: Any) -> None:
-    parser.add_argument("--backend", choices=["hf", "vllm", "mock"], help="推理后端（默认 hf）")
+    parser.add_argument("--backend", choices=["hf", "gguf", "vllm", "mock"],
+                        help="推理后端（默认 hf；无 NVIDIA 显卡时推荐 gguf）")
     parser.add_argument("--model-path", dest="model_path", help="本地模型目录")
     parser.add_argument("--device", choices=["auto", "cuda", "mps", "cpu"])
     parser.add_argument("--dtype", choices=["auto", "float32", "bfloat16", "float16"],

@@ -134,6 +134,72 @@ class QwenHFLLM(BaseLLM):
         return f"QwenHFLLM(model={self.model_path})"
 
 
+class QwenGGUFLLM(BaseLLM):
+    """llama.cpp 后端（llama-cpp-python），加载量化后的 GGUF 单文件，适合没有 NVIDIA 显卡、内存 16 GB 的电脑。
+
+    - 模型：同一个 Qwen3-4B-Instruct-2507，转换为 GGUF 并量化（如 Q8_0，约 4.3 GB）；
+    - 聊天模板：GGUF 文件里自带 Qwen 的 chat template，create_chat_completion 会自动套用，
+      与其他后端一样把整段 prompt 作为一条 user 消息；
+    - 随机种子：与 vLLM 后端相同的做法，每次调用用 (运行 seed, 调用序号) 组合，整次运行可复现。
+    """
+
+    def __init__(self, model_path: str, n_ctx: int = 16384, n_threads: Optional[int] = None):
+        if not os.path.isfile(model_path):
+            raise FileNotFoundError(
+                f"GGUF 模型文件不存在：{model_path}\n"
+                "--model-path 需要指向 .gguf 文件本身，例如 D:\\models\\Qwen3-4B-Instruct-2507-Q8_0.gguf"
+            )
+        try:
+            from llama_cpp import Llama
+        except ImportError as e:
+            raise ImportError(
+                "需要先安装 llama-cpp-python（CPU 版）：\n"
+                "pip install llama-cpp-python==0.3.36 --extra-index-url "
+                "https://abetlen.github.io/llama-cpp-python/whl/cpu --only-binary llama-cpp-python"
+            ) from e
+
+        self.model_path = model_path
+        # n_ctx：上下文长度。20 轮对话约 1 万 token，16k 足够；KV 缓存约占 2 GB 内存
+        # n_threads：默认用全部物理核心
+        threads = n_threads or max(1, (os.cpu_count() or 2) // 2)
+        print(f"[model] loading GGUF {model_path} (n_ctx={n_ctx}, threads={threads}) ...")
+        t0 = time.time()
+        self._llm = Llama(model_path=model_path, n_ctx=n_ctx, n_threads=threads, verbose=False)
+        print(f"[model] loaded in {time.time() - t0:.1f}s")
+        self._seed = 0
+        self._calls = 0
+        self.last_gen_info: Dict[str, Any] = {}
+
+    def reseed(self, seed: int) -> None:
+        self._seed = seed
+        self._calls = 0
+
+    def generate(self, prompt: str, temperature: float = 0.0, max_tokens: Optional[int] = None,
+                 top_p: float = 1.0, top_k: Optional[int] = None, **kwargs: Any) -> str:
+        self._calls += 1
+        sampled = bool(temperature and temperature > 0)
+        t0 = time.time()
+        out = self._llm.create_chat_completion(
+            messages=_messages(prompt),
+            temperature=temperature if sampled else 0.0,
+            top_p=top_p if sampled else 1.0,
+            top_k=(top_k or 0) if sampled else 1,     # top_k=1 即贪心解码
+            min_p=0.0,                                # Qwen 模型卡推荐 MinP=0（llama.cpp 默认 0.05）
+            max_tokens=max_tokens or 1024,
+            seed=self._seed * 100003 + self._calls,
+        )
+        usage = out.get("usage", {})
+        self.last_gen_info = {
+            "prompt_tokens": usage.get("prompt_tokens"),
+            "new_tokens": usage.get("completion_tokens"),
+            "seconds": round(time.time() - t0, 2),
+        }
+        return (out["choices"][0]["message"]["content"] or "").strip()
+
+    def __repr__(self) -> str:
+        return f"QwenGGUFLLM(model={self.model_path})"
+
+
 class QwenVLLMLLM(BaseLLM):
     """vLLM 后端（可选，仅 Linux + NVIDIA GPU）。用 llm.chat() 自动套用聊天模板。"""
 
@@ -231,6 +297,8 @@ def build_model(cfg: ExperimentConfig) -> BaseLLM:
     """按配置创建模型。买卖双方共享同一个模型对象（任务要求：同一个 LLM 扮演双方）。"""
     if cfg.backend == "hf":
         return QwenHFLLM(cfg.model_path, device=cfg.device, offline=cfg.offline, dtype=cfg.dtype)
+    if cfg.backend == "gguf":
+        return QwenGGUFLLM(cfg.model_path)
     if cfg.backend == "vllm":
         return QwenVLLMLLM(cfg.model_path, offline=cfg.offline)
     if cfg.backend == "mock":
