@@ -1,0 +1,241 @@
+"""任务第 1 部分：获取人物公开资料并逐条核对来源（可复现的数据获取脚本）。
+
+做三件事：
+1. 下载每个来源的原文（Wikipedia 用官方的 action=raw 接口取页面源文本；SEC EDGAR 和新闻网页直接下载 HTML），
+   保存到 personas/evidence/snapshots/，并记录下载时间、HTTP 状态码、SHA-256 指纹；
+2. 对 personas/bezos.txt、graham.txt 里的每条事实，在对应来源原文中查找关键词/关键句（全部命中才算找到），
+   并截取命中位置附近的原文片段作为证据；
+3. 输出 personas/evidence/evidence_report.csv 与 evidence_report.md。
+
+用法（在仓库根目录，需要联网；SEC 要求在 User-Agent 里留联系邮箱）：
+    python experiments/bezos_graham/fetch_public_facts.py --email 你的邮箱
+    python experiments/bezos_graham/fetch_public_facts.py --offline      # 不联网，只用已保存的快照重新核对
+
+只用 Python 标准库，不需要额外安装。
+"""
+
+from __future__ import annotations
+
+import argparse
+import csv
+import hashlib
+import html
+import json
+import re
+import sys
+import time
+import urllib.request
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Dict, List, Optional
+
+EXP_DIR = Path(__file__).resolve().parent
+EVIDENCE_DIR = EXP_DIR / "personas" / "evidence"
+SNAPSHOT_DIR = EVIDENCE_DIR / "snapshots"
+
+# ---------------------------------------------------------------------------
+# 来源清单：key -> (说明, 下载地址, 引用地址)
+# Wikipedia 的 action=raw 返回页面的源文本（wikitext），比解析网页 HTML 稳定
+# ---------------------------------------------------------------------------
+SOURCES: Dict[str, Dict[str, str]] = {
+    "wiki_bezos": {
+        "title": "Wikipedia: Jeff Bezos",
+        "fetch_url": "https://en.wikipedia.org/w/index.php?title=Jeff_Bezos&action=raw",
+        "cite_url": "https://en.wikipedia.org/wiki/Jeff_Bezos",
+    },
+    "wiki_graham": {
+        "title": "Wikipedia: Donald E. Graham",
+        "fetch_url": "https://en.wikipedia.org/w/index.php?title=Donald_E._Graham&action=raw",
+        "cite_url": "https://en.wikipedia.org/wiki/Donald_E._Graham",
+    },
+    "amazon_letter": {
+        "title": "Amazon.com 2012 Letter to Shareholders (SEC EDGAR, re-attaches the 1997 letter)",
+        "fetch_url": "https://www.sec.gov/Archives/edgar/data/1018724/000119312513151836/d511111dex991.htm",
+        "cite_url": "https://www.sec.gov/Archives/edgar/data/1018724/000119312513151836/d511111dex991.htm",
+    },
+    "wapo_10k_2012": {
+        "title": "The Washington Post Company Form 10-K, fiscal year 2012 (SEC EDGAR)",
+        "fetch_url": "https://www.sec.gov/Archives/edgar/data/0000104889/000010488913000009/d10k.htm",
+        "cite_url": "https://www.sec.gov/Archives/edgar/data/0000104889/000010488913000009/d10k.htm",
+    },
+    "poynter_2013": {
+        "title": "Poynter: Washington Post sold to Jeff Bezos (Aug 5, 2013)",
+        "fetch_url": "https://www.poynter.org/reporting-editing/2013/washington-post-sold-to-jeff-bezos/",
+        "cite_url": "https://www.poynter.org/reporting-editing/2013/washington-post-sold-to-jeff-bezos/",
+    },
+    "cnn_2013": {
+        "title": "CNN Money: Amazon's Bezos buys Washington Post for $250 million (Aug 5, 2013)",
+        "fetch_url": "https://money.cnn.com/2013/08/05/news/companies/washington-post-bezos",
+        "cite_url": "https://money.cnn.com/2013/08/05/news/companies/washington-post-bezos",
+    },
+}
+
+# ---------------------------------------------------------------------------
+# 事实清单：编号与 personas/sources.csv 一致。
+# patterns 中每一项都必须在来源原文中出现（不区分大小写；一项内部可用 | 表示“任一即可”）。
+# ---------------------------------------------------------------------------
+FACTS: List[Dict] = [
+    {"id": "B1", "person": "Jeff Bezos", "source": "wiki_bezos",
+     "fact": "Born 1964 in Albuquerque; Princeton 1986, summa cum laude",
+     "patterns": ["1964", "Albuquerque", "Princeton", "summa cum laude"]},
+    {"id": "B2", "person": "Jeff Bezos", "source": "wiki_bezos",
+     "fact": "Worked at D. E. Shaw 1990-1994; senior vice president",
+     "patterns": [r"D\. ?E\. Shaw", "senior vice president|vice-president|vice president"]},
+    {"id": "B3", "person": "Jeff Bezos", "source": "wiki_bezos",
+     "fact": "Founded Amazon 1994 in a garage in Bellevue; IPO 1997; Time Person of the Year 1999",
+     "patterns": ["Bellevue", "garage", "1997", "Person of the Year"]},
+    {"id": "B4", "person": "Jeff Bezos", "source": "wiki_bezos",
+     "fact": "Founded Blue Origin in 2000; invests through Bezos Expeditions (Google, 1998)",
+     "patterns": ["Blue Origin", "Bezos Expeditions", "Google"]},
+    {"id": "B5", "person": "Jeff Bezos", "source": "wiki_bezos",
+     "fact": "Net worth estimated at about $28.9 billion in 2013",
+     "patterns": [r"28\.9"]},
+    {"id": "B6", "person": "Jeff Bezos", "source": "amazon_letter",
+     "fact": "Long-term orientation and relentless customer focus (1997 letter)",
+     "patterns": ["over the long term", "focus relentlessly on our customers"]},
+    {"id": "B7", "person": "Jeff Bezos", "source": "wiki_bezos",
+     "fact": "'Day 1' mindset and frugality",
+     "patterns": ["Day 1", "frugal|parsimony"]},
+    {"id": "B8", "person": "Jeff Bezos", "source": "poynter_2013",
+     "fact": "Buys in his individual capacity; Amazon is not the buyer",
+     "patterns": ["individual capacity", r"not Amazon\.com"]},
+    {"id": "G1", "person": "Donald Graham", "source": "wiki_graham",
+     "fact": "Born 1945; son of Katharine and Philip Graham; grandson of Eugene Meyer (bought the Post in 1933)",
+     "patterns": ["1945", "Katharine Graham", "Philip", "Eugene Meyer", "1933"]},
+    {"id": "G2", "person": "Donald Graham", "source": "poynter_2013",
+     "fact": "Family has owned and nurtured the Post for eight decades",
+     "patterns": ["eight decades"]},
+    {"id": "G3", "person": "Donald Graham", "source": "wiki_graham",
+     "fact": "Harvard 1966 (Crimson president); Vietnam, 1st Cavalry Division; D.C. police patrolman",
+     "patterns": ["Harvard Crimson|The Crimson", "1st Cavalry|First Cavalry", "Vietnam", "Metropolitan Police|police"]},
+    {"id": "G4", "person": "Donald Graham", "source": "wiki_graham",
+     "fact": "Reporter 1971; publisher 1979-2000; CEO 1991; chairman 1993",
+     "patterns": ["1971", "1979", "1991", "publisher"]},
+    {"id": "G5", "person": "Donald Graham", "source": "wiki_graham",
+     "fact": "Lead independent director of Facebook's board since 2009",
+     "patterns": ["Facebook", "2009"]},
+    {"id": "G6", "person": "Donald Graham", "source": "poynter_2013",
+     "fact": "Graham's stated view: revenue declined seven years; limits of cost cuts; wants the Post to succeed",
+     "patterns": ["declined seven years in a row", "limit to that", "revenue decline", "succeed"]},
+    {"id": "P1", "person": "Both", "source": "wapo_10k_2012",
+     "fact": "Newspaper division revenue fell 7% to $581.7M (2011: $622.5M)",
+     "patterns": [r"581\.7", r"622\.5"]},
+    {"id": "P2", "person": "Both", "source": "wapo_10k_2012",
+     "fact": "Newspaper division operating loss $53.7M in 2012 (2011: $21.2M)",
+     "patterns": [r"53\.7", r"21\.2"]},
+    {"id": "P3", "person": "Both", "source": "wapo_10k_2012",
+     "fact": "Average paid daily circulation 480,166 (2011: 523,746); Sunday 697,026 (738,962)",
+     "patterns": ["480,166", "523,746", "697,026", "738,962"]},
+    {"id": "X1", "person": "Excluded on purpose", "source": "cnn_2013", "fallback_source": "poynter_2013",
+     "fact": "Actual sale price $250 million: NOT added to prompts (would anchor on the historical answer)",
+     "patterns": ["250 million"]},
+]
+
+
+def to_text(raw: str) -> str:
+    """去掉 HTML 标签与脚本，统一引号和空白，便于查找。"""
+    raw = re.sub(r"(?is)<(script|style)[^>]*>.*?</\1>", " ", raw)
+    raw = re.sub(r"(?s)<[^>]+>", " ", raw)
+    raw = html.unescape(raw)
+    raw = raw.replace("’", "'").replace("‘", "'").replace("“", '"').replace("”", '"')
+    raw = raw.replace("\xa0", " ")
+    return re.sub(r"\s+", " ", raw)
+
+
+def fetch(url: str, user_agent: str, timeout: int = 30) -> Dict:
+    req = urllib.request.Request(url, headers={"User-Agent": user_agent, "Accept-Encoding": "identity"})
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        body = resp.read()
+        charset = resp.headers.get_content_charset() or "utf-8"
+        return {"status": resp.status, "body": body.decode(charset, errors="replace")}
+
+
+def snippet(text: str, pattern: str, width: int = 90) -> str:
+    m = re.search(pattern, text, flags=re.IGNORECASE)
+    if not m:
+        return ""
+    a, b = max(0, m.start() - width), min(len(text), m.end() + width)
+    return "..." + text[a:b].strip() + "..."
+
+
+def main() -> None:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(errors="replace")
+    parser = argparse.ArgumentParser(description="Fetch and verify public persona facts")
+    parser.add_argument("--email", default="", help="联系邮箱（SEC EDGAR 要求 User-Agent 中包含）")
+    parser.add_argument("--offline", action="store_true", help="不联网，只用已保存的快照核对")
+    parser.add_argument("--sleep", type=float, default=1.0, help="两次下载之间的间隔秒数（礼貌访问）")
+    args = parser.parse_args()
+
+    SNAPSHOT_DIR.mkdir(parents=True, exist_ok=True)
+    user_agent = f"AIPAY-TASK research script (academic use; contact: {args.email or 'not provided'})"
+    meta_path = SNAPSHOT_DIR / "fetch_log.json"
+    meta: Dict[str, Dict] = json.loads(meta_path.read_text(encoding="utf-8")) if meta_path.exists() else {}
+
+    texts: Dict[str, Optional[str]] = {}
+    for key, src in SOURCES.items():
+        snap = SNAPSHOT_DIR / f"{key}.txt"
+        if not args.offline:
+            try:
+                res = fetch(src["fetch_url"], user_agent)
+                snap.write_text(to_text(res["body"]), encoding="utf-8")   # 保存去掉 HTML 后的正文；指纹按原始下载内容计算
+                meta[key] = {
+                    "url": src["fetch_url"], "http_status": res["status"],
+                    "fetched_at_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                    "sha256": hashlib.sha256(res["body"].encode("utf-8")).hexdigest(),
+                    "bytes": len(res["body"].encode("utf-8")),
+                }
+                print(f"[fetch] OK   {key:14s} HTTP {res['status']}  {meta[key]['bytes']:>8d} bytes")
+            except Exception as e:  # 网络问题不中断，后面会标为 fetch_failed
+                print(f"[fetch] FAIL {key:14s} {type(e).__name__}: {e}")
+                meta.setdefault(key, {})["last_error"] = f"{type(e).__name__}: {e}"
+            time.sleep(args.sleep)
+        texts[key] = to_text(snap.read_text(encoding="utf-8")) if snap.exists() else None
+    meta_path.write_text(json.dumps(meta, indent=2, ensure_ascii=False), encoding="utf-8")
+
+    rows = []
+    for f in FACTS:
+        key = f["source"]
+        if texts.get(key) is None and f.get("fallback_source") and texts.get(f["fallback_source"]) is not None:
+            key = f["fallback_source"]          # 主来源下载失败时，用报道了同一事实的备用来源
+        src, text = SOURCES[key], texts.get(key)
+        if text is None:
+            status, missing, evidence = "fetch_failed", f["patterns"], ""
+        else:
+            missing = [p for p in f["patterns"] if not re.search(p, text, flags=re.IGNORECASE)]
+            status = "verified" if not missing else "not_found"
+            evidence = " | ".join(s for s in (snippet(text, p) for p in f["patterns"]) if s)
+        info = meta.get(key, {})
+        rows.append({
+            "fact_id": f["id"], "person": f["person"], "fact": f["fact"], "status": status,
+            "missing_patterns": "; ".join(missing), "source_title": src["title"], "source_url": src["cite_url"],
+            "fetched_at_utc": info.get("fetched_at_utc", ""), "sha256": info.get("sha256", ""),
+            "evidence_snippets": evidence,
+        })
+
+    with open(EVIDENCE_DIR / "evidence_report.csv", "w", newline="", encoding="utf-8-sig") as fh:
+        writer = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
+        writer.writeheader()
+        writer.writerows(rows)
+
+    lines = ["# Evidence report: public persona facts", "",
+             f"Generated: {datetime.now(timezone.utc).isoformat(timespec='seconds')} (UTC)", "",
+             "| ID | Person | Fact | Status | Source |", "|---|---|---|---|---|"]
+    for r in rows:
+        lines.append(f"| {r['fact_id']} | {r['person']} | {r['fact']} | {r['status']} | [{r['source_title']}]({r['source_url']}) |")
+    lines += ["", "## Evidence snippets", ""]
+    for r in rows:
+        lines.append(f"**{r['fact_id']}** ({r['status']}): {r['evidence_snippets'] or '(none)'}")
+        lines.append("")
+    (EVIDENCE_DIR / "evidence_report.md").write_text("\n".join(lines), encoding="utf-8")
+
+    n_ok = sum(r["status"] == "verified" for r in rows)
+    print(f"\n[verify] {n_ok}/{len(rows)} facts verified in their sources")
+    for r in rows:
+        if r["status"] != "verified":
+            print(f"  - {r['fact_id']}: {r['status']}  missing={r['missing_patterns']}")
+    print(f"[verify] report: {EVIDENCE_DIR / 'evidence_report.csv'}")
+
+
+if __name__ == "__main__":
+    main()
