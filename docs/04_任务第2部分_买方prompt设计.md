@@ -49,21 +49,23 @@ A2 再加入**议价筹码**，全部基于第 1 部分的公开事实，没有�
 
 ## 4. 运行命令
 
-三组都在同一台电脑、同样的参数下运行（`--cache-gb 2` 只用于加速，见下文）：
+三组都在同一台电脑、同样的参数下运行：
 
 ```powershell
 # A0：论文原文 + 人物资料
-python experiments/bezos_graham/run_experiments.py --runs 10 --tag A0_personas --quiet --backend gguf --model-path D:\models\Qwen3-4B-Instruct-2507-Q8_0.gguf --max-new-tokens 300 --cache-gb 2 --personas
+python experiments/bezos_graham/run_experiments.py --runs 10 --tag A0_personas --quiet --backend gguf --model-path D:\models\Qwen3-4B-Instruct-2507-Q8_0.gguf --max-new-tokens 300 --personas
 
 # A1：+ 谈判策略
-python experiments/bezos_graham/run_experiments.py --runs 10 --tag A1_disciplined --quiet --backend gguf --model-path D:\models\Qwen3-4B-Instruct-2507-Q8_0.gguf --max-new-tokens 300 --cache-gb 2 --personas --buyer-template buyer_A1_disciplined.txt
+python experiments/bezos_graham/run_experiments.py --runs 10 --tag A1_disciplined --quiet --backend gguf --model-path D:\models\Qwen3-4B-Instruct-2507-Q8_0.gguf --max-new-tokens 300 --personas --buyer-template buyer_A1_disciplined.txt
 
 # A2：+ 谈判策略 + 议价筹码
-python experiments/bezos_graham/run_experiments.py --runs 10 --tag A2_leverage --quiet --backend gguf --model-path D:\models\Qwen3-4B-Instruct-2507-Q8_0.gguf --max-new-tokens 300 --cache-gb 2 --personas --buyer-template buyer_A2_leverage.txt
+python experiments/bezos_graham/run_experiments.py --runs 10 --tag A2_leverage --quiet --backend gguf --model-path D:\models\Qwen3-4B-Instruct-2507-Q8_0.gguf --max-new-tokens 300 --personas --buyer-template buyer_A2_leverage.txt
 ```
 
 每组结束后，`outputs/<tag>_gguf_<时间>/summary.json` 里就是任务要求的三个指标：`avg_final_price`、`deal_rate`、`avg_rounds`。
 
-### 关于 `--cache-gb 2`
+### 可选：`--cache-gb 2`（未验证能提速）
 
-买卖双方轮流使用同一个模型，两人的 prompt 开头不同，llama.cpp 默认只能复用“上一次”的前缀，所以每轮都要把整段对话从头读一遍，越往后越慢。打开 2 GB 的 prompt 缓存后，两人各自读过的部分会被保留，下次只需读新增内容。它不改变 prompt、规则或采样参数，只影响速度。三组都要使用同样的设置。
+买卖双方轮流使用同一个模型，两人的 prompt 开头不同，llama.cpp 默认只能复用"上一次"的前缀，所以每轮都要把整段对话从头读一遍。`--cache-gb 2` 会打开 2 GB 的 prompt 缓存，让两人各自读过的部分被保留。
+
+我在开发环境里用一个小模型做了对比：开不开缓存，模型生成的内容**完全相同**（8 句话逐字一致），但那次测试的 prompt 只有约 1,500 个 token，**没有测出提速**。对话越长，缓存理论上越有用，但效果没有实测证明。如果要用，三组必须都加，或者都不加。
