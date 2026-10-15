@@ -21,6 +21,7 @@ from typing import Any, Dict, Optional
 EXP_DIR = Path(__file__).resolve().parent              # experiments/bezos_graham/
 REPO_ROOT = EXP_DIR.parent.parent                       # 仓库根目录
 PROMPT_DIR = EXP_DIR / "prompts"
+PERSONA_DIR = EXP_DIR / "personas"                      # 任务第 (1) 部分：人物公开资料（来源见 personas/sources.csv）
 
 # AgenticPay 官方源码位置（论文对应提交 1a347cf 的原样拷贝，随项目提供）。
 # 如放在别处，可设置环境变量 AGENTICPAY_ROOT 覆盖。
@@ -78,9 +79,12 @@ class ExperimentConfig:
     # ---------------- Prompt 模板 ----------------
     buyer_template: str = "buyer_table14.txt"   # [PAPER Table 14]
     seller_template: str = "seller_table15.txt" # [PAPER Table 15]
-    # 下一步（加入公开人物资料）预留的位置：非空时插在模板最后一行 "Now, respond as ..." 之前。
+    # 人物公开资料（任务第 1 部分）：非空时插在模板最后一行 "Now, respond as ..." 之前。
+    # 用 --personas 加载 personas/bezos.txt 与 personas/graham.txt，或用 --buyer-persona-file 等单独指定。
     buyer_persona: str = ""
     seller_persona: str = ""
+    buyer_persona_file: str = ""
+    seller_persona_file: str = ""
 
     # ---------------- 场景信息（双方都能看到的公开信息） ----------------
     # 买方的 user_requirement（只进入买方 context，对应上游 Task1 示例中的同名参数）
@@ -157,9 +161,30 @@ def apply_cli_overrides(cfg: ExperimentConfig, args: Any) -> ExperimentConfig:
         cfg.fix_round_cap = False
     if getattr(args, "online", False):
         cfg.offline = False
+    if getattr(args, "price_tolerance", None) is not None:
+        cfg.price_tolerance = args.price_tolerance
+    # 人物资料：--personas 使用默认文件；--buyer/seller-persona-file 可单独覆盖
+    if getattr(args, "personas", False):
+        cfg.buyer_persona_file = str(PERSONA_DIR / "bezos.txt")
+        cfg.seller_persona_file = str(PERSONA_DIR / "graham.txt")
+    if getattr(args, "buyer_persona_file", None):
+        cfg.buyer_persona_file = args.buyer_persona_file
+    if getattr(args, "seller_persona_file", None):
+        cfg.seller_persona_file = args.seller_persona_file
+    if cfg.buyer_persona_file:
+        cfg.buyer_persona = _read_text(cfg.buyer_persona_file)
+    if cfg.seller_persona_file:
+        cfg.seller_persona = _read_text(cfg.seller_persona_file)
     if getattr(args, "quiet", False):
         cfg.verbose = False
     return cfg
+
+
+def _read_text(path_str: str) -> str:
+    path = Path(path_str)
+    if not path.is_absolute() and not path.exists():
+        path = PERSONA_DIR / path_str
+    return path.read_text(encoding="utf-8").strip()
 
 
 def add_common_cli_args(parser: Any) -> None:
@@ -182,5 +207,11 @@ def add_common_cli_args(parser: Any) -> None:
     parser.add_argument("--buyer-template", dest="buyer_template", help="prompts/ 下的买方模板文件名")
     parser.add_argument("--seller-template", dest="seller_template", help="prompts/ 下的卖方模板文件名")
     parser.add_argument("--output-dir", dest="output_dir")
+    parser.add_argument("--price-tolerance", dest="price_tolerance", type=float,
+                        help="双方报价相差不超过该值即成交（论文版示例为 0；正式实验用 5）")
+    parser.add_argument("--personas", action="store_true",
+                        help="加入人物公开资料（personas/bezos.txt、personas/graham.txt）")
+    parser.add_argument("--buyer-persona-file", dest="buyer_persona_file", help="买方人物资料文件")
+    parser.add_argument("--seller-persona-file", dest="seller_persona_file", help="卖方人物资料文件")
     parser.add_argument("--online", action="store_true", help="允许联网加载模型（默认离线）")
     parser.add_argument("--quiet", action="store_true", help="不打印每轮对话")

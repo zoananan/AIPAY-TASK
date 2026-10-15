@@ -98,6 +98,36 @@ class TestPromptsFollowPaperTables(unittest.TestCase):
         self.assertIn("PUBLIC FACTS: test-persona-line\n\nNow, respond as Jeff Bezos:", bp)
 
 
+class TestPersonasAndTolerance(unittest.TestCase):
+    def _cfg_from_cli(self, *argv):
+        import argparse
+        from exp_config import add_common_cli_args, apply_cli_overrides
+        parser = argparse.ArgumentParser()
+        add_common_cli_args(parser)
+        return apply_cli_overrides(quiet_cfg(), parser.parse_args(list(argv)))
+
+    def test_personas_flag_loads_files_without_leaking_private_prices(self):
+        cfg = self._cfg_from_cli("--personas")
+        self.assertIn("Princeton", cfg.buyer_persona)
+        self.assertIn("Eugene Meyer", cfg.seller_persona)
+        bp, sp = first_round_prompts(cfg)
+        self.assertIn("PUBLIC BACKGROUND ABOUT YOU", bp)
+        self.assertIn("Katharine Graham", sp)
+        self.assertTrue(bp.rstrip().endswith("Now, respond as Jeff Bezos:"))
+        num = lambda x: re.compile(rf"(?<![\d.]){x}(?:\.0)?(?![\d])")   # noqa: E731
+        self.assertIsNone(num(350).search(sp))
+        self.assertIsNone(num(200).search(bp))
+        self.assertIsNone(num(400).search(bp))
+        self.assertNotIn("250 million", bp + sp)          # 不泄露历史成交价
+
+    def test_price_tolerance_closes_near_miss(self):
+        cfg = self._cfg_from_cli("--price-tolerance", "5")
+        with tempfile.TemporaryDirectory() as d:
+            rec = run_episode(cfg, ScriptedLLM([300, 335], [350, 337.5]), 0, Path(d))
+        self.assertEqual((rec["status"], rec["rounds"]), ("agreed", 2))
+        self.assertAlmostEqual(rec["agreed_price"], 336.25)   # 上游取双方报价的平均
+
+
 class TestEnvironmentBehaviour(unittest.TestCase):
     def test_round_cap_is_exactly_20(self):
         cfg = quiet_cfg()
