@@ -161,6 +161,43 @@ class TestPersonaPipeline(unittest.TestCase):
         self.assertIn("after cutoff", check("You were a Facebook director.",
                                             "lead independent director of Facebook's board of directors (2009-2015)"))
 
+    def test_speaker_attribution_in_news_article(self):
+        """Poynter 报道里同时有 Graham、Weymouth、Bezos 的话：引用必须归属于本人。"""
+        import persona_pipeline as pp
+        text = pp.snapshot_text("poynter_2013")
+        if text is None:
+            self.skipTest("poynter snapshot missing")
+        self.assertEqual(pp.quote_speaker("poynter_2013", text, "Our revenues had declined seven years in a row."),
+                         "Donald Graham")
+        self.assertEqual(pp.quote_speaker("poynter_2013", text, "I am incredibly proud of the work that we have done "
+                                          "together over the past 5 years"), "Katharine Weymouth")
+        self.assertEqual(pp.quote_speaker("poynter_2013", text, "I understand the critical role the Post plays in "
+                                          "Washington, DC and our nation"), "Jeff Bezos")
+        self.assertIsNone(pp.quote_speaker("amazon_letter", "any text", "any text"))   # 单一作者的来源不做归属检查
+
+    def test_selection_rules(self):
+        """build 阶段：提到对方的条目被排除；理念/观点按相关性排序并受名额限制；人工条目不占名额。"""
+        import persona_pipeline as pp
+
+        def cand(i, person, statement, category="philosophy", method="llm_extraction (fake)"):
+            return {"candidate_id": f"C{i:03d}", "person": person, "section": "about_person", "category": category,
+                    "statement": statement, "date": "", "source_key": "amazon_letter", "source_url": "",
+                    "method": method, "evidence": statement, "pre_reject": ""}
+
+        views = [cand(i, "Jeff Bezos", s) for i, s in enumerate([
+            "You enjoy hiring talented engineers.", "You take great pride in your team.",
+            "You think long-term about customer value.", "You make bold investment decisions.",
+            "You work hard to spend wisely and keep a lean culture.", "You believe in customer obsession."], 1)]
+        other = [cand(10, "Donald Graham", "You admire Jeff Bezos as an owner."),
+                 cand(11, "Jeff Bezos", "You act in your personal capacity.", "background", "manual (reason: x)")]
+        out = {c["candidate_id"]: c for c in pp.select(views + other)}
+        self.assertEqual(out["C010"]["reason"], "rule: mentions the other negotiator")
+        self.assertEqual(out["C011"]["status"], "selected")
+        chosen = {c["candidate_id"] for c in views if out[c["candidate_id"]]["status"] == "selected"}
+        self.assertEqual(len(chosen), pp.GROUP_QUOTA["views"])
+        self.assertNotIn("C001", chosen)          # 相关性最低的两条被名额挤掉
+        self.assertNotIn("C002", chosen)
+
     def test_llm_extraction_with_fake_model(self):
         """用假模型走一遍 extract③：解析 JSON、缓存输出、核对引用；不需要真实的 Qwen。"""
         import persona_pipeline as pp

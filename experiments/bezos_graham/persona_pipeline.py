@@ -53,10 +53,34 @@ CUTOFF_YEAR = 2013
 OUTCOME_BLACKLIST = re.compile(
     r"250 million|purchase price|\bsold\b|\bsale\b|\bto sell\b|\bselling\b|Nash Holdings|"
     r"agreed to (buy|acquire|sell)|\bacquisition of the (post|paper|newspaper)\b|new owner|"
-    r"Graham Holdings",            # 公司在出售报纸后（2013 年 11 月）才改名为 Graham Holdings
+    r"Graham Holdings|"            # 公司在出售报纸后（2013 年 11 月）才改名为 Graham Holdings
+    r"today'?s announcement|\bhis ownership\b|\bthis (deal|transaction)\b",
     re.IGNORECASE)
 LLM_CATEGORIES = {"background", "education", "career", "philosophy", "views_on_post"}
-MAX_FACTS_PER_PERSON = 12
+# 每人每组的数量上限（人工补充条目不占名额）：生平 4 条、经历 6 条、理念/观点 4 条
+CATEGORY_GROUP = {"background": "bio", "education": "bio", "career": "career",
+                  "philosophy": "views", "views_on_post": "views"}
+GROUP_QUOTA = {"bio": 4, "career": 6, "views": 4}
+GROUP_ORDER = ["bio", "career", "views"]
+# 组内排序用的“相关性”关键词（与收购谈判相关的经营理念/财务处境），命中越多越靠前
+RELEVANCE_TERMS = ["long-term", "long term", "short-term", "invest", "spend", "lean", "frugal", "cost", "revenue",
+                   "declin", "profit", "price", "value", "customer", "patient", "survive", "succeed", "bold"]
+# 一方的资料里不能出现另一方（谈判开始前双方的公开资料彼此独立，也避免泄露交易本身）
+COUNTERPART_PATTERNS = {
+    "Jeff Bezos": re.compile(r"\bDon(ald)?( E\.)? Graham\b|\bGraham family\b"),
+    "Donald Graham": re.compile(r"\bJeff\b|\bBezos\b"),
+}
+# 多人发言的新闻稿：按“谁说的”核对引用归属。引用后 100 字符内的后置署名优先（"...," said X），
+# 否则取引用之前最近的一个署名。正则在规范化（小写）后的文本上匹配。
+SPEAKER_CUES: Dict[str, List[tuple]] = {
+    "poynter_2013": [
+        (r"said donald (e\. )?graham|graham said|donald graham, the post", "Donald Graham"),
+        (r"weymouth says|weymouth said|said ms\. weymouth", "Katharine Weymouth"),
+        (r"bezos writes|bezos said|said mr\. bezos|bezos' letter to employees", "Jeff Bezos"),
+        (r"edmonds said", "Rick Edmonds"),
+        (r"the post says in a release|the announcement says", "press release"),
+    ],
+}
 DEDUP_JACCARD = 0.6
 
 PEOPLE = {
@@ -167,7 +191,8 @@ def normalize_space(t: str) -> str:
 
 def canon(t: str) -> str:
     """核对“逐字引用”时用的规范化：大小写、引号、空白、首尾标点不敏感。"""
-    return re.sub(r"\s+", " ", normalize_space(t).lower()).strip(" .,;:\"'")
+    t = re.sub(r"\s+", " ", normalize_space(t).lower())
+    return re.sub(r"\s*-\s*", "-", t).strip(" .,;:\"'")
 
 
 def numbers_in(t: str) -> List[str]:
@@ -268,6 +293,10 @@ def wikidata_candidates() -> List[Dict[str, Any]]:
                         "source_url": f"https://www.wikidata.org/wiki/{qid}#{prop}",
                         "method": "wikidata_sparql+template", "evidence": evidence, "pre_reject": reject})
 
+        fpath = SNAPSHOT_DIR / f"wikidata_{qid}_founded.json"
+        founded_rows = json.loads(fpath.read_text(encoding="utf-8"))["results"]["bindings"] if fpath.exists() else []
+        founded_labels = {get(r, "orgLabel") for r in founded_rows}
+
         births = by_prop.get("P569", [])
         places = by_prop.get("P19", [])
         if births:
@@ -287,7 +316,10 @@ def wikidata_candidates() -> List[Dict[str, Any]]:
         for prop, verb in (("P108", "worked at"), ("P463", "became a member of")):
             for r in by_prop.get(prop, []):
                 org, s, e = get(r, "valLabel"), _date(get(r, "start")), _date(get(r, "end"))
-                if not s:
+                if prop == "P108" and org in founded_labels:
+                    add(prop, f"You {verb} {org}.", s, f"{prop}={org} start={s}",
+                        "rule: redundant with the 'founded' fact", "career")
+                elif not s:
                     add(prop, f"You {verb} {org}.", "", f"{prop}={org}", "rule: undated statement", "career")
                 elif s > CUTOFF:
                     add(prop, f"You {verb} {org} in {s[:4]}.", s, f"{prop}={org} start={s}", "rule: after cutoff", "career")
@@ -307,9 +339,8 @@ def wikidata_candidates() -> List[Dict[str, Any]]:
             add("P166", f"You received the award {award}" + (f" in {d[:4]}." if d else "."), d,
                 f"P166={award} pit={d}", reject, "career")
 
-        fpath = SNAPSHOT_DIR / f"wikidata_{qid}_founded.json"
-        if fpath.exists():
-            for r in json.loads(fpath.read_text(encoding="utf-8"))["results"]["bindings"]:
+        if founded_rows:
+            for r in founded_rows:
                 org, d = get(r, "orgLabel"), _date(get(r, "inception"))
                 reject = "rule: undated statement" if not d else ("rule: after cutoff" if d > CUTOFF else "")
                 out.append({"person": person, "section": "about_person", "category": "career",
@@ -441,6 +472,26 @@ def llm_candidates(model: Any, model_name: str, reuse_cache: bool = True) -> Lis
     return out
 
 
+def quote_speaker(source_key: str, text: str, quote: str) -> Optional[str]:
+    """按 SPEAKER_CUES 判断引用是谁说的；该来源没有配置署名规则时返回 None。"""
+    cues = SPEAKER_CUES.get(source_key)
+    if not cues:
+        return None
+    ct, cq = canon(text), canon(quote)
+    pos = ct.find(cq)
+    if pos < 0:
+        return None
+    after = ct[pos + len(cq): pos + len(cq) + 100]
+    best, best_pos = "unknown", -1
+    for pattern, speaker in cues:
+        if re.search(pattern, after):
+            return speaker
+        for m in re.finditer(pattern, ct[:pos]):
+            if m.start() > best_pos:
+                best, best_pos = speaker, m.start()
+    return best
+
+
 def check_llm_fact(c: Dict[str, Any]) -> str:
     """返回淘汰原因；空字符串表示通过全部检查。"""
     st, quote, text = c["statement"], c["evidence"], c.pop("_source_text", "")
@@ -450,10 +501,15 @@ def check_llm_fact(c: Dict[str, Any]) -> str:
         return "llm: quote too short"
     if canon(quote) not in canon(text):
         return "llm: quote not found verbatim in source (possible hallucination)"
+    speaker = quote_speaker(c.get("source_key", ""), text, quote)
+    if speaker is not None and speaker != c.get("person"):
+        return f"llm: quote is attributed to {speaker}, not {c.get('person')}"
     if not re.search(r"\b(you|your)\b", " ".join(st.split()[:8]), re.IGNORECASE):   # 前 8 个词内要有 you/your
         return "llm: statement not in second person"
     if len(st.split()) > 60:
         return "llm: statement too long"
+    if re.search(r"\b(these|those)\b|\btoday'?s\b", st, re.IGNORECASE):
+        return "llm: statement depends on missing context"
     missing = [n for n in numbers_in(st) if n not in numbers_in(quote)]
     if missing:
         return f"llm: statement contains numbers not in quote {missing}"
@@ -529,30 +585,54 @@ HEADER_PERSON = ("PUBLIC BACKGROUND ABOUT YOU (public information as of mid-2013
 HEADER_POST = ("PUBLIC FACTS ABOUT THE WASHINGTON POST "
                "(The Washington Post Company, 2012 annual report, SEC Form 10-K):")
 METHOD_PRIORITY = {"wikidata": 0, "regex": 1, "manual": 2, "llm": 3}
+WIKIDATA_PROP_PRIORITY = {"founded": 0, "P108": 1, "P166": 2, "P463": 3}   # 创办 > 任职 > 获奖 > 成员资格
+
+
+def _method(c: Dict[str, str]) -> str:
+    return c["method"].split("_")[0].split(" ")[0]
+
+
+def _group(c: Dict[str, str]) -> str:
+    return CATEGORY_GROUP.get(c["category"], "bio")
+
+
+def relevance(statement: str) -> int:
+    s = statement.lower()
+    return sum(1 for t in RELEVANCE_TERMS if t in s)
+
+
+def _rank(c: Dict[str, str]) -> tuple:
+    prop = "founded" if c["source_key"].endswith("_founded") else c["source_url"].rsplit("#", 1)[-1]
+    return (METHOD_PRIORITY.get(_method(c), 9), -relevance(c["statement"]),
+            WIKIDATA_PROP_PRIORITY.get(prop, 0), c["candidate_id"])
 
 
 def select(cands: List[Dict[str, str]]) -> List[Dict[str, str]]:
     log = load_log()
     for c in cands:
         reason = c["pre_reject"]
-        if not reason and c["section"] != "excluded" and not c["method"].startswith("manual"):
-            if OUTCOME_BLACKLIST.search(c["statement"]) or OUTCOME_BLACKLIST.search(c["evidence"]):
+        if not reason and c["section"] != "excluded" and _method(c) != "manual":
+            text = c["statement"] + " " + c["evidence"]
+            other = COUNTERPART_PATTERNS.get(c["person"])
+            if OUTCOME_BLACKLIST.search(text):
                 reason = "rule: mentions the deal outcome/price (blacklist)"
+            elif other is not None and other.search(text):
+                reason = "rule: mentions the other negotiator"
         c["status"], c["reason"] = ("rejected", reason) if reason else ("candidate", "")
         c["retrieved_at_utc"] = log.get(c["source_key"], {}).get("fetched_at_utc", "")
         c["sha256_of_download"] = log.get(c["source_key"], {}).get("sha256", "")
 
     kept: Dict[str, List[Dict[str, str]]] = {}
-    order = sorted((c for c in cands if c["status"] == "candidate"),
-                   key=lambda c: METHOD_PRIORITY.get(c["method"].split("_")[0].split(" ")[0], 9))
-    for c in order:
+    for c in sorted((c for c in cands if c["status"] == "candidate"), key=_rank):
         group = kept.setdefault(c["person"], [])
         dup = next((g for g in group if len(_tokens(c["statement"]) & _tokens(g["statement"]))
                     / max(1, len(_tokens(c["statement"]) | _tokens(g["statement"]))) >= DEDUP_JACCARD), None)
+        g = _group(c)
+        used = sum(1 for x in group if _group(x) == g and _method(x) != "manual")
         if dup:
             c["status"], c["reason"] = "rejected", f"rule: near-duplicate of {dup['candidate_id']}"
-        elif c["section"] == "about_person" and len(group) >= MAX_FACTS_PER_PERSON:
-            c["status"], c["reason"] = "rejected", f"rule: over the {MAX_FACTS_PER_PERSON}-fact limit"
+        elif c["section"] == "about_person" and _method(c) != "manual" and used >= GROUP_QUOTA[g]:
+            c["status"], c["reason"] = "rejected", f"rule: over the quota for '{g}' ({GROUP_QUOTA[g]})"
         else:
             c["status"] = "selected"
             group.append(c)
@@ -561,7 +641,8 @@ def select(cands: List[Dict[str, str]]) -> List[Dict[str, str]]:
 
 def render(person: str, selected: List[Dict[str, str]]) -> str:
     def line_order(c: Dict[str, str]) -> tuple:
-        return (METHOD_PRIORITY.get(c["method"].split("_")[0].split(" ")[0], 9), c["date"] or "9999")
+        # 生平 → 经历 → 理念/观点，组内按时间；人工补充（情境说明）放在最后
+        return (_method(c) == "manual", GROUP_ORDER.index(_group(c)), c["date"] or "9999", c["candidate_id"])
 
     mine = sorted([c for c in selected if c["person"] == person and c["section"] == "about_person"], key=line_order)
     post = [c for c in selected if c["section"] == "about_post"]
@@ -584,7 +665,7 @@ def cmd_build(args: argparse.Namespace) -> None:
         w.writerows(cands)
     selected = [c for c in cands if c["status"] == "selected"]
     with open(SOURCES_CSV, "w", newline="", encoding="utf-8") as fh:
-        w = csv.DictWriter(fh, fieldnames=fields[3:], extrasaction="ignore")
+        w = csv.DictWriter(fh, fieldnames=fields[:1] + fields[3:], extrasaction="ignore")
         w.writeheader()
         w.writerows(selected)
     for person, info in PEOPLE.items():
