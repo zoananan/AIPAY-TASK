@@ -1,0 +1,8 @@
+{
+ "source": "poynter_2013",
+ "chunk": 2,
+ "model": "Qwen3-4B-Instruct-2507-Q8_0.gguf",
+ "prompt_sha256_16": "16a2c38914096d53",
+ "seconds": 73.3,
+ "raw_output": "[\n  {\n    \"statement\": \"You are incredibly proud of the work that we have done together over the past 5 years\",\n    \"quote\": \"I am incredibly proud of the work that we have done together over the past 5 years, and I know that sentiment is shared by the entire senior management team.\",\n    \"year\": null,\n    \"category\": \"philosophy\"\n  },\n  {\n    \"statement\": \"You have maintained and invested in the quality and ambition of your journalism\",\n    \"quote\": \"We are particularly proud that we have been able to do this while maintaining and investing in the quality and ambition of our journalism.\",\n    \"year\": null,\n    \"category\": \"philosophy\"\n  },\n  {\n    \"statement\": \"You will remain as Publisher and CEO of The Washington Post\",\n    \"quote\": \"I have asked that I remain as your Publisher and CEO. I am honored to do so.\",\n    \"year\": null,\n    \"category\": \"career\"\n  },\n  {\n    \"statement\": \"You will continue in your roles as part of the senior management team\",\n    \"quote\": \"I have asked the entire senior management team to continue in their roles as well.\",\n    \"year\": null,\n    \"category\": \"career\"\n  },\n  {\n    \"statement\": \"You will be part of a future filled with opportunity\",\n    \"quote\": \"I hope that you, too, will join us in a future that is filled with opportunity.\",\n    \"year\": null,\n    \"category\": \"views_on_post\"\n  }\n]"
+}
