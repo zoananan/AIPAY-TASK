@@ -121,6 +121,23 @@ class TestPersonasAndTolerance(unittest.TestCase):
         self.assertNotIn("250 million", bp + sp)          # 不泄露历史成交价
 
 
+class TestPersonaPipeline(unittest.TestCase):
+    """CSV → 人物资料文本：仓库里的 bezos.txt / graham.txt 必须与由 CSV 重新生成的结果一致。"""
+
+    def test_persona_files_match_csv(self):
+        import build_personas as bp
+        spec = bp.read_csv(bp.SPEC_PATH)
+        verified = {r["fact_id"]: r["verification_status"] for r in bp.read_csv(bp.SOURCES_CSV)}
+        for person, filename in bp.OUTPUTS.items():
+            on_disk = (bp.PERSONA_DIR / filename).read_text(encoding="utf-8")
+            self.assertEqual(on_disk, bp.build(person, spec, verified), f"{filename} 与 CSV 不一致")
+
+    def test_excluded_fact_never_in_prompts(self):
+        import build_personas as bp
+        text = "".join((bp.PERSONA_DIR / f).read_text(encoding="utf-8") for f in bp.OUTPUTS.values())
+        self.assertNotIn("250 million", text)
+
+
 class TestBuyerVariants(unittest.TestCase):
     """第 2 部分：变体只改买方，且只是在 Table 14 原文基础上“增加”内容。"""
 

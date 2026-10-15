@@ -3,9 +3,10 @@
 做三件事：
 1. 下载每个来源的原文（Wikipedia 用官方的 action=raw 接口取页面源文本；SEC EDGAR 和新闻网页直接下载 HTML），
    保存到 personas/evidence/snapshots/，并记录下载时间、HTTP 状态码、SHA-256 指纹；
-2. 对 personas/bezos.txt、graham.txt 里的每条事实，在对应来源原文中查找关键词/关键句（全部命中才算找到），
+2. 对 personas/facts_spec.csv 里的每条事实，在对应来源原文中查找关键词/关键句（全部命中才算找到），
    并截取命中位置附近的原文片段作为证据；
-3. 输出 personas/evidence/evidence_report.csv 与 evidence_report.md。
+3. 输出 personas/evidence/evidence_report.csv / .md，以及结构化的 personas/sources.csv
+   （之后由 build_personas.py 把 CSV 转成 prompt 用的 bezos.txt / graham.txt）。
 
 用法（在仓库根目录，需要联网；SEC 要求在 User-Agent 里留联系邮箱）：
     python experiments/bezos_graham/fetch_public_facts.py --email 你的邮箱
@@ -70,66 +71,21 @@ SOURCES: Dict[str, Dict[str, str]] = {
     },
 }
 
-# ---------------------------------------------------------------------------
-# 事实清单：编号与 personas/sources.csv 一致。
-# patterns 中每一项都必须在来源原文中出现（不区分大小写；一项内部可用 | 表示“任一即可”）。
-# ---------------------------------------------------------------------------
-FACTS: List[Dict] = [
-    {"id": "B1", "person": "Jeff Bezos", "source": "wiki_bezos",
-     "fact": "Born 1964 in Albuquerque; Princeton 1986, summa cum laude",
-     "patterns": ["1964", "Albuquerque", "Princeton", "summa cum laude"]},
-    {"id": "B2", "person": "Jeff Bezos", "source": "wiki_bezos",
-     "fact": "Worked at D. E. Shaw 1990-1994; senior vice president",
-     "patterns": [r"D\. ?E\. Shaw", "senior vice president|vice-president|vice president"]},
-    {"id": "B3", "person": "Jeff Bezos", "source": "wiki_bezos",
-     "fact": "Founded Amazon 1994 in a garage in Bellevue; IPO 1997; Time Person of the Year 1999",
-     "patterns": ["Bellevue", "garage", "1997", "Person of the Year"]},
-    {"id": "B4", "person": "Jeff Bezos", "source": "wiki_bezos",
-     "fact": "Founded Blue Origin in 2000; invests through Bezos Expeditions (Google, 1998)",
-     "patterns": ["Blue Origin", "Bezos Expeditions", "Google"]},
-    {"id": "B5", "person": "Jeff Bezos", "source": "wiki_bezos",
-     "fact": "Net worth estimated at about $28.9 billion in 2013",
-     "patterns": [r"28\.9"]},
-    {"id": "B6", "person": "Jeff Bezos", "source": "amazon_letter",
-     "fact": "Long-term orientation and relentless customer focus (1997 letter)",
-     "patterns": ["over the long term", "focus relentlessly on our customers"]},
-    {"id": "B7", "person": "Jeff Bezos", "source": "wiki_bezos",
-     "fact": "'Day 1' mindset and frugality",
-     "patterns": ["Day 1", "frugal|parsimony"]},
-    {"id": "B8", "person": "Jeff Bezos", "source": "poynter_2013",
-     "fact": "Buys in his individual capacity; Amazon is not the buyer",
-     "patterns": ["individual capacity", r"not Amazon\.com"]},
-    {"id": "G1", "person": "Donald Graham", "source": "wiki_graham",
-     "fact": "Born 1945; son of Katharine and Philip Graham; grandson of Eugene Meyer (bought the Post in 1933)",
-     "patterns": ["1945", "Katharine Graham", "Philip", "Eugene Meyer", "1933"]},
-    {"id": "G2", "person": "Donald Graham", "source": "poynter_2013",
-     "fact": "Family has owned and nurtured the Post for eight decades",
-     "patterns": ["eight decades"]},
-    {"id": "G3", "person": "Donald Graham", "source": "wiki_graham",
-     "fact": "Harvard 1966 (Crimson president); Vietnam, 1st Cavalry Division; D.C. police patrolman",
-     "patterns": ["Harvard Crimson|The Crimson", "1st Cavalry|First Cavalry", "Vietnam", "Metropolitan Police|police"]},
-    {"id": "G4", "person": "Donald Graham", "source": "wiki_graham",
-     "fact": "Reporter 1971; publisher 1979-2000; CEO 1991; chairman 1993",
-     "patterns": ["1971", "1979", "1991", "publisher"]},
-    {"id": "G5", "person": "Donald Graham", "source": "wiki_graham",
-     "fact": "Lead independent director of Facebook's board since 2009",
-     "patterns": ["Facebook", "2009"]},
-    {"id": "G6", "person": "Donald Graham", "source": "poynter_2013",
-     "fact": "Graham's stated view: revenue declined seven years; limits of cost cuts; wants the Post to succeed",
-     "patterns": ["declined seven years in a row", "limit to that", "revenue decline", "succeed"]},
-    {"id": "P1", "person": "Both", "source": "wapo_10k_2012",
-     "fact": "Newspaper division revenue fell 7% to $581.7M (2011: $622.5M)",
-     "patterns": [r"581\.7", r"622\.5"]},
-    {"id": "P2", "person": "Both", "source": "wapo_10k_2012",
-     "fact": "Newspaper division operating loss $53.7M in 2012 (2011: $21.2M)",
-     "patterns": [r"53\.7", r"21\.2"]},
-    {"id": "P3", "person": "Both", "source": "wapo_10k_2012",
-     "fact": "Average paid daily circulation 480,166 (2011: 523,746); Sunday 697,026 (738,962)",
-     "patterns": ["480,166", "523,746", "697,026", "738,962"]},
-    {"id": "X1", "person": "Excluded on purpose", "source": "cnn_2013", "fallback_source": "poynter_2013",
-     "fact": "Actual sale price $250 million: NOT added to prompts (would anchor on the historical answer)",
-     "patterns": ["250 million"]},
-]
+# 事实清单：放在 personas/facts_spec.csv（人工挑选的唯一来源），每行一条事实：
+#   fact_id, person, section, include_in_prompt, source_key, fallback_source_key,
+#   check_patterns（用 " ;; " 分隔；每一项都必须在原文中出现，一项内部可用 | 表示“任一即可”）,
+#   fact_summary, prompt_line（写进 prompt 的英文原句）
+SPEC_PATH = EXP_DIR / "personas" / "facts_spec.csv"
+SOURCES_CSV = EXP_DIR / "personas" / "sources.csv"
+
+
+def load_facts() -> List[Dict]:
+    with open(SPEC_PATH, newline="", encoding="utf-8") as fh:
+        rows = list(csv.DictReader(fh))
+    for r in rows:
+        r["patterns"] = [p.strip() for p in r["check_patterns"].split(";;") if p.strip()]
+        assert r["source_key"] in SOURCES, f"{r['fact_id']}: unknown source {r['source_key']}"
+    return rows
 
 
 def to_text(raw: str) -> str:
@@ -194,10 +150,11 @@ def main() -> None:
     meta_path.write_text(json.dumps(meta, indent=2, ensure_ascii=False), encoding="utf-8")
 
     rows = []
-    for f in FACTS:
-        key = f["source"]
-        if texts.get(key) is None and f.get("fallback_source") and texts.get(f["fallback_source"]) is not None:
-            key = f["fallback_source"]          # 主来源下载失败时，用报道了同一事实的备用来源
+    for f in load_facts():
+        key = f["source_key"]
+        fb = f.get("fallback_source_key") or ""
+        if texts.get(key) is None and fb and texts.get(fb) is not None:
+            key = fb                            # 主来源下载失败时，用报道了同一事实的备用来源
         src, text = SOURCES[key], texts.get(key)
         if text is None:
             status, missing, evidence = "fetch_failed", f["patterns"], ""
@@ -207,7 +164,7 @@ def main() -> None:
             evidence = " | ".join(s for s in (snippet(text, p) for p in f["patterns"]) if s)
         info = meta.get(key, {})
         rows.append({
-            "fact_id": f["id"], "person": f["person"], "fact": f["fact"], "status": status,
+            "fact_id": f["fact_id"], "person": f["person"], "fact": f["fact_summary"], "status": status,
             "missing_patterns": "; ".join(missing), "source_title": src["title"], "source_url": src["cite_url"],
             "fetched_at_utc": info.get("fetched_at_utc", ""), "sha256": info.get("sha256", ""),
             "evidence_snippets": evidence,
@@ -229,12 +186,35 @@ def main() -> None:
         lines.append("")
     (EVIDENCE_DIR / "evidence_report.md").write_text("\n".join(lines), encoding="utf-8")
 
+    # ---- 原始资料 → 结构化 CSV：只收录核对通过的事实 ----
+    spec = {f["fact_id"]: f for f in load_facts()}
+    with open(SOURCES_CSV, "w", newline="", encoding="utf-8") as fh:
+        fields = ["fact_id", "person", "section", "included_in_prompt", "fact", "verification_status",
+                  "source_title", "source_url", "retrieved_at_utc", "sha256_of_download",
+                  "retrieval_method", "evidence_quote"]
+        writer = csv.DictWriter(fh, fieldnames=fields)
+        writer.writeheader()
+        for r in rows:
+            f = spec[r["fact_id"]]
+            method = ("Wikipedia action=raw API + keyword check" if "wikipedia" in r["source_url"]
+                      else "HTTP download of page + keyword check")
+            writer.writerow({
+                "fact_id": r["fact_id"], "person": r["person"], "section": f["section"],
+                "included_in_prompt": f["include_in_prompt"], "fact": r["fact"],
+                "verification_status": r["status"], "source_title": r["source_title"],
+                "source_url": r["source_url"], "retrieved_at_utc": r["fetched_at_utc"],
+                "sha256_of_download": r["sha256"], "retrieval_method": method,
+                "evidence_quote": r["evidence_snippets"].split(" | ")[0] if r["evidence_snippets"] else "",
+            })
+
     n_ok = sum(r["status"] == "verified" for r in rows)
     print(f"\n[verify] {n_ok}/{len(rows)} facts verified in their sources")
     for r in rows:
         if r["status"] != "verified":
             print(f"  - {r['fact_id']}: {r['status']}  missing={r['missing_patterns']}")
     print(f"[verify] report: {EVIDENCE_DIR / 'evidence_report.csv'}")
+    print(f"[csv]    structured sources: {SOURCES_CSV}")
+    print("下一步：python experiments/bezos_graham/build_personas.py  （由 CSV 生成 bezos.txt / graham.txt）")
 
 
 if __name__ == "__main__":

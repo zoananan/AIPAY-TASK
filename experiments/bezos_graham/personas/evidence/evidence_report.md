@@ -1,6 +1,6 @@
 # Evidence report: public persona facts
 
-Generated: 2026-10-15T03:29:57+00:00 (UTC)
+Generated: 2026-10-15T03:35:03+00:00 (UTC)
 
 | ID | Person | Fact | Status | Source |
 |---|---|---|---|---|
@@ -9,7 +9,7 @@ Generated: 2026-10-15T03:29:57+00:00 (UTC)
 | B3 | Jeff Bezos | Founded Amazon 1994 in a garage in Bellevue; IPO 1997; Time Person of the Year 1999 | verified | [Wikipedia: Jeff Bezos](https://en.wikipedia.org/wiki/Jeff_Bezos) |
 | B4 | Jeff Bezos | Founded Blue Origin in 2000; invests through Bezos Expeditions (Google, 1998) | verified | [Wikipedia: Jeff Bezos](https://en.wikipedia.org/wiki/Jeff_Bezos) |
 | B5 | Jeff Bezos | Net worth estimated at about $28.9 billion in 2013 | verified | [Wikipedia: Jeff Bezos](https://en.wikipedia.org/wiki/Jeff_Bezos) |
-| B6 | Jeff Bezos | Long-term orientation and relentless customer focus (1997 letter) | verified | [Amazon.com 2012 Letter to Shareholders (SEC EDGAR, re-attaches the 1997 letter)](https://www.sec.gov/Archives/edgar/data/1018724/000119312513151836/d511111dex991.htm) |
+| B6 | Jeff Bezos | Long-term orientation and relentless customer focus (1997 shareholder letter) | verified | [Amazon.com 2012 Letter to Shareholders (SEC EDGAR, re-attaches the 1997 letter)](https://www.sec.gov/Archives/edgar/data/1018724/000119312513151836/d511111dex991.htm) |
 | B7 | Jeff Bezos | 'Day 1' mindset and frugality | verified | [Wikipedia: Jeff Bezos](https://en.wikipedia.org/wiki/Jeff_Bezos) |
 | B8 | Jeff Bezos | Buys in his individual capacity; Amazon is not the buyer | verified | [Poynter: Washington Post sold to Jeff Bezos (Aug 5, 2013)](https://www.poynter.org/reporting-editing/2013/washington-post-sold-to-jeff-bezos/) |
 | G1 | Donald Graham | Born 1945; son of Katharine and Philip Graham; grandson of Eugene Meyer (bought the Post in 1933) | verified | [Wikipedia: Donald E. Graham](https://en.wikipedia.org/wiki/Donald_E._Graham) |
@@ -21,7 +21,7 @@ Generated: 2026-10-15T03:29:57+00:00 (UTC)
 | P1 | Both | Newspaper division revenue fell 7% to $581.7M (2011: $622.5M) | verified | [The Washington Post Company Form 10-K, fiscal year 2012 (SEC EDGAR)](https://www.sec.gov/Archives/edgar/data/0000104889/000010488913000009/d10k.htm) |
 | P2 | Both | Newspaper division operating loss $53.7M in 2012 (2011: $21.2M) | verified | [The Washington Post Company Form 10-K, fiscal year 2012 (SEC EDGAR)](https://www.sec.gov/Archives/edgar/data/0000104889/000010488913000009/d10k.htm) |
 | P3 | Both | Average paid daily circulation 480,166 (2011: 523,746); Sunday 697,026 (738,962) | verified | [The Washington Post Company Form 10-K, fiscal year 2012 (SEC EDGAR)](https://www.sec.gov/Archives/edgar/data/0000104889/000010488913000009/d10k.htm) |
-| X1 | Excluded on purpose | Actual sale price $250 million: NOT added to prompts (would anchor on the historical answer) | verified | [Poynter: Washington Post sold to Jeff Bezos (Aug 5, 2013)](https://www.poynter.org/reporting-editing/2013/washington-post-sold-to-jeff-bezos/) |
+| X1 | Excluded on purpose | Actual sale price $250 million: NOT added to prompts (would anchor both agents on the historical answer) | verified | [Poynter: Washington Post sold to Jeff Bezos (Aug 5, 2013)](https://www.poynter.org/reporting-editing/2013/washington-post-sold-to-jeff-bezos/) |
 
 ## Evidence snippets
 
