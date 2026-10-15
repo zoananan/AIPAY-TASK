@@ -1,0 +1,78 @@
+{
+ "head": {
+  "vars": [
+   "org",
+   "orgLabel",
+   "inception"
+  ]
+ },
+ "results": {
+  "bindings": [
+   {
+    "org": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q3884"
+    },
+    "inception": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "type": "literal",
+     "value": "1994-07-05T00:00:00Z"
+    },
+    "orgLabel": {
+     "xml:lang": "en",
+     "type": "literal",
+     "value": "Amazon"
+    }
+   },
+   {
+    "org": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q885836"
+    },
+    "inception": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "type": "literal",
+     "value": "2000-09-01T00:00:00Z"
+    },
+    "orgLabel": {
+     "xml:lang": "en",
+     "type": "literal",
+     "value": "Blue Origin"
+    }
+   },
+   {
+    "org": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q21680767"
+    },
+    "inception": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "type": "literal",
+     "value": "2013-08-02T00:00:00Z"
+    },
+    "orgLabel": {
+     "xml:lang": "en",
+     "type": "literal",
+     "value": "Nash Holdings"
+    }
+   },
+   {
+    "org": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q85746831"
+    },
+    "inception": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "type": "literal",
+     "value": "2020-01-01T00:00:00Z"
+    },
+    "orgLabel": {
+     "xml:lang": "en",
+     "type": "literal",
+     "value": "Bezos Earth Fund"
+    }
+   }
+  ]
+ },
+ "_query": "\nSELECT ?org ?orgLabel ?inception WHERE {\n  ?org wdt:P112 wd:Q312556 . OPTIONAL { ?org wdt:P571 ?inception }\n  SERVICE wikibase:label { bd:serviceParam wikibase:language \"en\". }\n}"
+}

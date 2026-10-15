@@ -109,7 +109,7 @@ class TestPersonasAndTolerance(unittest.TestCase):
     def test_personas_flag_loads_files_without_leaking_private_prices(self):
         cfg = self._cfg_from_cli("--personas")
         self.assertIn("Princeton", cfg.buyer_persona)
-        self.assertIn("Eugene Meyer", cfg.seller_persona)
+        self.assertIn("You are Donald Graham", cfg.seller_persona)
         bp, sp = first_round_prompts(cfg)
         self.assertIn("PUBLIC BACKGROUND ABOUT YOU", bp)
         self.assertIn("Katharine Graham", sp)
@@ -122,20 +122,75 @@ class TestPersonasAndTolerance(unittest.TestCase):
 
 
 class TestPersonaPipeline(unittest.TestCase):
-    """CSV → 人物资料文本：仓库里的 bezos.txt / graham.txt 必须与由 CSV 重新生成的结果一致。"""
+    """混合式人物资料流水线（persona_pipeline.py）。"""
 
-    def test_persona_files_match_csv(self):
-        import build_personas as bp
-        spec = bp.read_csv(bp.SPEC_PATH)
-        verified = {r["fact_id"]: r["verification_status"] for r in bp.read_csv(bp.SOURCES_CSV)}
-        for person, filename in bp.OUTPUTS.items():
-            on_disk = (bp.PERSONA_DIR / filename).read_text(encoding="utf-8")
-            self.assertEqual(on_disk, bp.build(person, spec, verified), f"{filename} 与 CSV 不一致")
+    def test_persona_files_match_sources_csv(self):
+        """仓库里的 bezos.txt / graham.txt 必须与 sources.csv（入选事实）重新渲染的结果一致。"""
+        import csv
+        import persona_pipeline as pp
+        with open(pp.SOURCES_CSV, newline="", encoding="utf-8") as fh:
+            selected = list(csv.DictReader(fh))
+        for person, info in pp.PEOPLE.items():
+            on_disk = (pp.PERSONA_DIR / info["file"]).read_text(encoding="utf-8")
+            self.assertEqual(on_disk, pp.render(person, selected), f"{info['file']} 与 sources.csv 不一致")
 
     def test_excluded_fact_never_in_prompts(self):
-        import build_personas as bp
-        text = "".join((bp.PERSONA_DIR / f).read_text(encoding="utf-8") for f in bp.OUTPUTS.values())
+        import persona_pipeline as pp
+        text = "".join((pp.PERSONA_DIR / i["file"]).read_text(encoding="utf-8") for i in pp.PEOPLE.values())
         self.assertNotIn("250 million", text)
+        self.assertIsNone(pp.OUTCOME_BLACKLIST.search(text))
+
+    def test_llm_fact_checks(self):
+        """模型抽取的事实：引用必须逐字出现在原文中，数字/年份/人称/类别/黑名单规则逐条生效。"""
+        import persona_pipeline as pp
+        src = ("In 1965, he was elected president of The Harvard Crimson, the college's daily newspaper. "
+               "He was later the lead independent director of Facebook's board of directors (2009-2015).")
+
+        def check(statement, quote, year="", category="career"):
+            c = {"statement": statement, "evidence": quote, "date": year, "category": category,
+                 "_source_text": src}
+            return pp.check_llm_fact(c)
+
+        good_q = "In 1965, he was elected president of The Harvard Crimson"
+        self.assertEqual(check("You were elected president of The Harvard Crimson in 1965.", good_q, "1965"), "")
+        self.assertIn("not found verbatim",
+                      check("You edited the Crimson.", "he was the editor in chief of the Crimson", "1965"))
+        self.assertIn("numbers not in quote", check("You led the Crimson in 1966.", good_q, "1966"))
+        self.assertIn("second person", check("Graham led the Crimson in 1965.", good_q))
+        self.assertIn("category", check("You led the Crimson in 1965.", good_q, category="gossip"))
+        self.assertIn("after cutoff", check("You were a Facebook director.",
+                                            "lead independent director of Facebook's board of directors (2009-2015)"))
+
+    def test_llm_extraction_with_fake_model(self):
+        """用假模型走一遍 extract③：解析 JSON、缓存输出、核对引用；不需要真实的 Qwen。"""
+        import persona_pipeline as pp
+        text = pp.snapshot_text("wiki_graham")
+        if text is None:
+            self.skipTest("wiki_graham snapshot missing")
+        real_quote = re.search(r"From January 1969 to June 1970[^.]*", text).group(0)
+
+        class FakeModel:
+            def generate(self, prompt, temperature=0.0, max_tokens=None):
+                if "about Donald Graham" not in prompt or "1969" not in prompt:
+                    return "[]"
+                return ('Sure: [{"statement": "From 1969 to 1970 you served as a patrolman in Washington, D.C.", '
+                        f'"quote": "{real_quote}", "year": 1969, "category": "career"}}, '
+                        '{"statement": "You won a Pulitzer Prize.", "quote": "Graham won the Pulitzer Prize '
+                        'for public service", "year": 1980, "category": "career"}]')
+
+        with tempfile.TemporaryDirectory() as tmp:
+            old = pp.LLM_DIR
+            pp.LLM_DIR = Path(tmp)
+            try:
+                cands = [c for c in pp.llm_candidates(FakeModel(), "fake") if c["source_key"] == "wiki_graham"]
+                reasons = [pp.check_llm_fact(c) for c in cands]
+                self.assertEqual(reasons[0], "")
+                self.assertIn("not found verbatim", reasons[1])
+                # 第二次运行：model=None 时只读缓存，结果相同（离线可复现）
+                again = [c for c in pp.llm_candidates(None, "") if c["source_key"] == "wiki_graham"]
+                self.assertEqual([c["statement"] for c in again], [c["statement"] for c in cands])
+            finally:
+                pp.LLM_DIR = old
 
 
 class TestBuyerVariants(unittest.TestCase):

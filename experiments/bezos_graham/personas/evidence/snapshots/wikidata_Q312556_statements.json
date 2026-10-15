@@ -1,0 +1,536 @@
+{
+ "head": {
+  "vars": [
+   "prop",
+   "val",
+   "valLabel",
+   "start",
+   "end",
+   "pit"
+  ]
+ },
+ "results": {
+  "bindings": [
+   {
+    "prop": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/P166"
+    },
+    "val": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q19833279"
+    },
+    "valLabel": {
+     "xml:lang": "en",
+     "type": "literal",
+     "value": "The James Smithson Bicentennial Medal"
+    },
+    "pit": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "type": "literal",
+     "value": "2016-01-01T00:00:00Z"
+    }
+   },
+   {
+    "prop": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/P25"
+    },
+    "val": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q92464290"
+    },
+    "valLabel": {
+     "xml:lang": "en",
+     "type": "literal",
+     "value": "Jackie Bezos"
+    }
+   },
+   {
+    "prop": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/P108"
+    },
+    "val": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q3884"
+    },
+    "valLabel": {
+     "xml:lang": "en",
+     "type": "literal",
+     "value": "Amazon"
+    },
+    "start": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "type": "literal",
+     "value": "1994-07-05T00:00:00Z"
+    }
+   },
+   {
+    "prop": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/P108"
+    },
+    "val": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q1151402"
+    },
+    "valLabel": {
+     "xml:lang": "en",
+     "type": "literal",
+     "value": "D.E. Shaw"
+    },
+    "start": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "type": "literal",
+     "value": "1990-01-01T00:00:00Z"
+    },
+    "end": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "type": "literal",
+     "value": "1994-01-01T00:00:00Z"
+    }
+   },
+   {
+    "prop": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/P166"
+    },
+    "val": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q31838295"
+    },
+    "valLabel": {
+     "xml:lang": "en",
+     "type": "literal",
+     "value": "Axel Springer Award"
+    },
+    "pit": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "type": "literal",
+     "value": "2018-01-01T00:00:00Z"
+    }
+   },
+   {
+    "prop": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/P69"
+    },
+    "val": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q7337668"
+    },
+    "valLabel": {
+     "xml:lang": "en",
+     "type": "literal",
+     "value": "River Oaks Elementary School"
+    }
+   },
+   {
+    "prop": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/P569"
+    },
+    "val": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "type": "literal",
+     "value": "1964-01-12T00:00:00Z"
+    },
+    "valLabel": {
+     "type": "literal",
+     "value": "1964-01-12T00:00:00Z"
+    }
+   },
+   {
+    "prop": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/P463"
+    },
+    "val": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q463303"
+    },
+    "valLabel": {
+     "xml:lang": "en",
+     "type": "literal",
+     "value": "American Academy of Arts and Sciences"
+    },
+    "start": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "type": "literal",
+     "value": "2012-01-01T00:00:00Z"
+    }
+   },
+   {
+    "prop": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/P19"
+    },
+    "val": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q34804"
+    },
+    "valLabel": {
+     "xml:lang": "en",
+     "type": "literal",
+     "value": "Albuquerque"
+    }
+   },
+   {
+    "prop": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/P166"
+    },
+    "val": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q10855271"
+    },
+    "valLabel": {
+     "xml:lang": "en",
+     "type": "literal",
+     "value": "Knight of the Legion of Honour"
+    },
+    "pit": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "type": "literal",
+     "value": "2023-02-16T00:00:00Z"
+    }
+   },
+   {
+    "prop": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/P22"
+    },
+    "val": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q97749941"
+    },
+    "valLabel": {
+     "xml:lang": "en",
+     "type": "literal",
+     "value": "Ted Jorgensen"
+    }
+   },
+   {
+    "prop": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/P166"
+    },
+    "val": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q604370"
+    },
+    "valLabel": {
+     "xml:lang": "en",
+     "type": "literal",
+     "value": "Time 100"
+    },
+    "pit": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "type": "literal",
+     "value": "2018-01-01T00:00:00Z"
+    }
+   },
+   {
+    "prop": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/P166"
+    },
+    "val": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q1868047"
+    },
+    "valLabel": {
+     "type": "literal",
+     "value": "Q1868047"
+    },
+    "pit": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "type": "literal",
+     "value": "2017-01-01T00:00:00Z"
+    }
+   },
+   {
+    "prop": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/P108"
+    },
+    "val": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q5453113"
+    },
+    "valLabel": {
+     "xml:lang": "en",
+     "type": "literal",
+     "value": "First International Telecom"
+    }
+   },
+   {
+    "prop": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/P69"
+    },
+    "val": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q21578"
+    },
+    "valLabel": {
+     "xml:lang": "en",
+     "type": "literal",
+     "value": "Princeton University"
+    },
+    "start": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "type": "literal",
+     "value": "1982-01-01T00:00:00Z"
+    },
+    "end": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "type": "literal",
+     "value": "1986-01-01T00:00:00Z"
+    }
+   },
+   {
+    "prop": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/P166"
+    },
+    "val": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q12410738"
+    },
+    "valLabel": {
+     "xml:lang": "en",
+     "type": "literal",
+     "value": "Heinlein Prize for Advances in Space Commercialization"
+    }
+   },
+   {
+    "prop": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/P463"
+    },
+    "val": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q1493021"
+    },
+    "valLabel": {
+     "xml:lang": "en",
+     "type": "literal",
+     "value": "National Academy of Engineering"
+    },
+    "start": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "type": "literal",
+     "value": "2018-01-01T00:00:00Z"
+    }
+   },
+   {
+    "prop": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/P166"
+    },
+    "val": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q604370"
+    },
+    "valLabel": {
+     "xml:lang": "en",
+     "type": "literal",
+     "value": "Time 100"
+    },
+    "pit": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "type": "literal",
+     "value": "2017-01-01T00:00:00Z"
+    }
+   },
+   {
+    "prop": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/P39"
+    },
+    "val": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q484876"
+    },
+    "valLabel": {
+     "xml:lang": "en",
+     "type": "literal",
+     "value": "chief executive officer"
+    },
+    "start": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "type": "literal",
+     "value": "1996-05-01T00:00:00Z"
+    },
+    "end": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "type": "literal",
+     "value": "2021-07-05T00:00:00Z"
+    }
+   },
+   {
+    "prop": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/P108"
+    },
+    "val": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q806739"
+    },
+    "valLabel": {
+     "xml:lang": "en",
+     "type": "literal",
+     "value": "Bankers Trust"
+    },
+    "start": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "type": "literal",
+     "value": "1988-01-01T00:00:00Z"
+    },
+    "end": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "type": "literal",
+     "value": "1990-01-01T00:00:00Z"
+    }
+   },
+   {
+    "prop": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/P166"
+    },
+    "val": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q207826"
+    },
+    "valLabel": {
+     "xml:lang": "en",
+     "type": "literal",
+     "value": "Time Person of the Year"
+    },
+    "pit": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "type": "literal",
+     "value": "1999-01-01T00:00:00Z"
+    }
+   },
+   {
+    "prop": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/P166"
+    },
+    "val": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q1664184"
+    },
+    "valLabel": {
+     "xml:lang": "en",
+     "type": "literal",
+     "value": "Innovation Prize of the German Economy"
+    }
+   },
+   {
+    "prop": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/P166"
+    },
+    "val": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q52382875"
+    },
+    "valLabel": {
+     "xml:lang": "en",
+     "type": "literal",
+     "value": "Fellow of the American Academy of Arts and Sciences"
+    }
+   },
+   {
+    "prop": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/P39"
+    },
+    "val": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q2534525"
+    },
+    "valLabel": {
+     "xml:lang": "en",
+     "type": "literal",
+     "value": "chairperson of the executive board"
+    }
+   },
+   {
+    "prop": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/P69"
+    },
+    "val": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q6827378"
+    },
+    "valLabel": {
+     "xml:lang": "en",
+     "type": "literal",
+     "value": "Miami Palmetto High School"
+    }
+   },
+   {
+    "prop": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/P463"
+    },
+    "val": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q1938003"
+    },
+    "valLabel": {
+     "xml:lang": "en",
+     "type": "literal",
+     "value": "Phi Beta Kappa Society"
+    }
+   },
+   {
+    "prop": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/P166"
+    },
+    "val": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q6562263"
+    },
+    "valLabel": {
+     "xml:lang": "en",
+     "type": "literal",
+     "value": "Gerard K. O’Neill Memorial Award"
+    },
+    "pit": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "type": "literal",
+     "value": "2018-01-01T00:00:00Z"
+    }
+   },
+   {
+    "prop": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/P166"
+    },
+    "val": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q130426086"
+    },
+    "valLabel": {
+     "xml:lang": "en",
+     "type": "literal",
+     "value": "World Space Award"
+    },
+    "pit": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "type": "literal",
+     "value": "2025-01-01T00:00:00Z"
+    }
+   }
+  ]
+ },
+ "_query": "\nSELECT ?prop ?val ?valLabel ?start ?end ?pit WHERE {\n  VALUES ?prop { wd:P569 wd:P19 wd:P69 wd:P108 wd:P39 wd:P166 wd:P463 wd:P22 wd:P25 }\n  wd:Q312556 ?p ?st . ?prop wikibase:claim ?p ; wikibase:statementProperty ?ps . ?st ?ps ?val .\n  OPTIONAL { ?st pq:P580 ?start } OPTIONAL { ?st pq:P582 ?end } OPTIONAL { ?st pq:P585 ?pit }\n  SERVICE wikibase:label { bd:serviceParam wikibase:language \"en\". }\n}"
+}

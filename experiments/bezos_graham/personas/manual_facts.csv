@@ -1,0 +1,3 @@
+fact_id,person,section,category,statement,date,source_key,quote,justification
+M1,Jeff Bezos,about_person,background,In this negotiation you act in your personal capacity through your own private entity. Amazon is not the buyer and is not involved.,2013,poynter_2013,The purchaser is an entity that belongs to Mr. Bezos in his individual capacity and is not Amazon.com,scenario framing: corrects the baseline hallucination of Amazon synergies; describes who the buyer is (not the price or outcome)
+X1,Excluded on purpose,excluded,outcome,Actual sale price $250 million: NOT added to any prompt.,2013-08-05,poynter_2013,The purchase price is $250 million,documented exclusion: would anchor both agents on the historical answer

@@ -1,40 +1,58 @@
 {
-  "wiki_bezos": {
-    "url": "https://en.wikipedia.org/w/index.php?title=Jeff_Bezos&action=raw",
-    "http_status": 200,
-    "fetched_at_utc": "2026-10-15T03:29:52+00:00",
-    "sha256": "12b3f4504ac6aec2ae546848960a601d266e9225de832e58043084cd8a1a814f",
-    "bytes": 227479
-  },
   "wiki_graham": {
     "url": "https://en.wikipedia.org/w/index.php?title=Donald_E._Graham&action=raw",
     "http_status": 200,
-    "fetched_at_utc": "2026-10-15T03:29:52+00:00",
+    "fetched_at_utc": "2026-10-15T04:00:43+00:00",
     "sha256": "8618f4569de1862806123df312bc2a5b71545617b5575d3d55363d871415e752",
     "bytes": 14289
   },
   "amazon_letter": {
     "url": "https://www.sec.gov/Archives/edgar/data/1018724/000119312513151836/d511111dex991.htm",
     "http_status": 200,
-    "fetched_at_utc": "2026-10-15T03:29:53+00:00",
+    "fetched_at_utc": "2026-10-15T04:00:45+00:00",
     "sha256": "124091f200d3cb5e375f7a976e93f5323c710a7b241f80b4d82a800ffaf2a103",
     "bytes": 36751
   },
   "wapo_10k_2012": {
     "url": "https://www.sec.gov/Archives/edgar/data/0000104889/000010488913000009/d10k.htm",
     "http_status": 200,
-    "fetched_at_utc": "2026-10-15T03:29:54+00:00",
+    "fetched_at_utc": "2026-10-15T04:00:51+00:00",
     "sha256": "091ab9da3fda238e6edb79c3ac4e5281a4431d83dc06d54d1ab69cc7899097e6",
     "bytes": 4932400
   },
   "poynter_2013": {
     "url": "https://www.poynter.org/reporting-editing/2013/washington-post-sold-to-jeff-bezos/",
     "http_status": 200,
-    "fetched_at_utc": "2026-10-15T03:29:55+00:00",
-    "sha256": "8d8968e974d00067d44885b07e3fcfa4e60fb866348f251dee76a477d29fc87f",
+    "fetched_at_utc": "2026-10-15T04:00:48+00:00",
+    "sha256": "56a5c2233dbca280a16dc6efbef0b4b758b738e944affc5a5fd827f081e797ed",
     "bytes": 269849
   },
-  "cnn_2013": {
-    "last_error": "HTTPError: HTTP Error 503: No healthy IP available for the backend"
+  "wikidata_Q312556_statements": {
+    "url": "https://query.wikidata.org/sparql",
+    "http_status": 200,
+    "fetched_at_utc": "2026-10-15T04:00:54+00:00",
+    "sha256": "68b28e0fb97ab12c5c34b5af6a84b6053771e3724af8881c36169d0a6a9c4ad4",
+    "bytes": 13197
+  },
+  "wikidata_Q312556_founded": {
+    "url": "https://query.wikidata.org/sparql",
+    "http_status": 200,
+    "fetched_at_utc": "2026-10-15T04:00:56+00:00",
+    "sha256": "91bcebc2221a68d8f451421c51492663f1382369c3652b6edc3cfd8aa9ba818d",
+    "bytes": 1709
+  },
+  "wikidata_Q5294282_statements": {
+    "url": "https://query.wikidata.org/sparql",
+    "http_status": 200,
+    "fetched_at_utc": "2026-10-15T04:01:05+00:00",
+    "sha256": "765e5d5fa9a8c0698a41bc9221c5c0e3bae08f47d1b09fb481991df52cef580b",
+    "bytes": 3067
+  },
+  "wikidata_Q5294282_founded": {
+    "url": "https://query.wikidata.org/sparql",
+    "http_status": 200,
+    "fetched_at_utc": "2026-10-15T04:01:19+00:00",
+    "sha256": "681e75505fe971581817def44273f448baf5a53d82f182b1179a6aa58bc46070",
+    "bytes": 110
   }
 }

@@ -1,0 +1,13 @@
+{
+ "head": {
+  "vars": [
+   "org",
+   "orgLabel",
+   "inception"
+  ]
+ },
+ "results": {
+  "bindings": []
+ },
+ "_query": "\nSELECT ?org ?orgLabel ?inception WHERE {\n  ?org wdt:P112 wd:Q5294282 . OPTIONAL { ?org wdt:P571 ?inception }\n  SERVICE wikibase:label { bd:serviceParam wikibase:language \"en\". }\n}"
+}

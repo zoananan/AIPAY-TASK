@@ -1,0 +1,142 @@
+{
+ "head": {
+  "vars": [
+   "prop",
+   "val",
+   "valLabel",
+   "start",
+   "end",
+   "pit"
+  ]
+ },
+ "results": {
+  "bindings": [
+   {
+    "prop": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/P569"
+    },
+    "val": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "type": "literal",
+     "value": "1945-04-22T00:00:00Z"
+    },
+    "valLabel": {
+     "type": "literal",
+     "value": "1945-04-22T00:00:00Z"
+    }
+   },
+   {
+    "prop": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/P25"
+    },
+    "val": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q435203"
+    },
+    "valLabel": {
+     "xml:lang": "en",
+     "type": "literal",
+     "value": "Katharine Graham"
+    }
+   },
+   {
+    "prop": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/P22"
+    },
+    "val": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q1605571"
+    },
+    "valLabel": {
+     "xml:lang": "en",
+     "type": "literal",
+     "value": "Phil Graham"
+    }
+   },
+   {
+    "prop": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/P19"
+    },
+    "val": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q5092"
+    },
+    "valLabel": {
+     "xml:lang": "en",
+     "type": "literal",
+     "value": "Baltimore"
+    }
+   },
+   {
+    "prop": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/P39"
+    },
+    "val": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q140686"
+    },
+    "valLabel": {
+     "xml:lang": "en",
+     "type": "literal",
+     "value": "chairperson"
+    },
+    "start": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "type": "literal",
+     "value": "2013-11-29T00:00:00Z"
+    }
+   },
+   {
+    "prop": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/P463"
+    },
+    "val": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q463303"
+    },
+    "valLabel": {
+     "xml:lang": "en",
+     "type": "literal",
+     "value": "American Academy of Arts and Sciences"
+    }
+   },
+   {
+    "prop": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/P69"
+    },
+    "val": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q49123"
+    },
+    "valLabel": {
+     "xml:lang": "en",
+     "type": "literal",
+     "value": "Harvard College"
+    }
+   },
+   {
+    "prop": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/P69"
+    },
+    "val": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q7586750"
+    },
+    "valLabel": {
+     "xml:lang": "en",
+     "type": "literal",
+     "value": "St. Albans School"
+    }
+   }
+  ]
+ },
+ "_query": "\nSELECT ?prop ?val ?valLabel ?start ?end ?pit WHERE {\n  VALUES ?prop { wd:P569 wd:P19 wd:P69 wd:P108 wd:P39 wd:P166 wd:P463 wd:P22 wd:P25 }\n  wd:Q5294282 ?p ?st . ?prop wikibase:claim ?p ; wikibase:statementProperty ?ps . ?st ?ps ?val .\n  OPTIONAL { ?st pq:P580 ?start } OPTIONAL { ?st pq:P582 ?end } OPTIONAL { ?st pq:P585 ?pit }\n  SERVICE wikibase:label { bd:serviceParam wikibase:language \"en\". }\n}"
+}
