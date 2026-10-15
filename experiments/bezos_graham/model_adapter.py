@@ -143,7 +143,8 @@ class QwenGGUFLLM(BaseLLM):
     - 随机种子：与 vLLM 后端相同的做法，每次调用用 (运行 seed, 调用序号) 组合，整次运行可复现。
     """
 
-    def __init__(self, model_path: str, n_ctx: int = 16384, n_threads: Optional[int] = None):
+    def __init__(self, model_path: str, n_ctx: int = 16384, n_threads: Optional[int] = None,
+                 cache_gb: float = 0.0):
         if not os.path.isfile(model_path):
             raise FileNotFoundError(
                 f"GGUF 模型文件不存在：{model_path}\n"
@@ -166,6 +167,13 @@ class QwenGGUFLLM(BaseLLM):
         t0 = time.time()
         self._llm = Llama(model_path=model_path, n_ctx=n_ctx, n_threads=threads, verbose=False)
         print(f"[model] loaded in {time.time() - t0:.1f}s")
+        if cache_gb > 0:
+            # 买卖双方轮流使用同一个模型，prompt 开头不同，llama.cpp 默认只能复用"上一次"的前缀，
+            # 所以每次都要从头读整段对话。RAM 缓存会按前缀保存两人各自读过的状态，下次只读新增部分。
+            # 只影响速度，不改变 prompt、规则和采样参数；三组实验应使用相同设置。
+            from llama_cpp import LlamaRAMCache
+            self._llm.set_cache(LlamaRAMCache(capacity_bytes=int(cache_gb * (1 << 30))))
+            print(f"[model] prompt cache enabled ({cache_gb} GB)")
         self._seed = 0
         self._calls = 0
         self.last_gen_info: Dict[str, Any] = {}
@@ -298,7 +306,7 @@ def build_model(cfg: ExperimentConfig) -> BaseLLM:
     if cfg.backend == "hf":
         return QwenHFLLM(cfg.model_path, device=cfg.device, offline=cfg.offline, dtype=cfg.dtype)
     if cfg.backend == "gguf":
-        return QwenGGUFLLM(cfg.model_path)
+        return QwenGGUFLLM(cfg.model_path, cache_gb=cfg.cache_gb)
     if cfg.backend == "vllm":
         return QwenVLLMLLM(cfg.model_path, offline=cfg.offline)
     if cfg.backend == "mock":

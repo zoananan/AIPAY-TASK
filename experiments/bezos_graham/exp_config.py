@@ -47,7 +47,7 @@ class ExperimentConfig:
     # ---------------- 环境规则 ----------------
     max_rounds: int = 20                    # [PAPER §5.1] 最多 20 轮（1 轮 = 买方 1 句 + 卖方 1 句）
     # 论文 §4.1：双方报出相同价格才算成交；论文版 examples/config.py 中 price_tolerance = 0.0
-    price_tolerance: float = 0.0            # [UPSTREAM config.py]
+    price_tolerance: float = 0.0            # [UPSTREAM config.py] 所有实验都保持 0，不提供命令行修改
     # 上游 step() 在递增轮次前判断 current_round >= max_rounds，实际允许 max_rounds+1 轮。
     # True：给环境传 max_rounds-1，使对话恰好最多 20 轮（与论文表述及 Table 20 一致）。
     fix_round_cap: bool = True              # [OURS]
@@ -110,6 +110,7 @@ class ExperimentConfig:
     backend: str = "hf"                     # "hf"（transformers）| "gguf"（llama.cpp，CPU 推荐）| "vllm"（仅 Linux+GPU）| "mock"（无模型自检）
     model_path: str = str(DEFAULT_MODEL_PATH)
     device: str = "auto"                    # auto | cuda | mps | cpu
+    cache_gb: float = 0.0                   # gguf 后端的 prompt 缓存大小（GB），0 = 关闭；只影响速度
     dtype: str = "auto"                     # auto（模型自带 bf16）| float32（CPU 上通常更快）| bfloat16 | float16
     offline: bool = True                    # True：禁止联网，只从本地目录加载模型
     output_dir: str = str(DEFAULT_OUTPUT_DIR)
@@ -139,6 +140,7 @@ def apply_cli_overrides(cfg: ExperimentConfig, args: Any) -> ExperimentConfig:
         "model_path": "model_path",
         "device": "device",
         "dtype": "dtype",
+        "cache_gb": "cache_gb",
         "initial_price": "initial_asking_price",
         "max_rounds": "max_rounds",
         "base_seed": "base_seed",
@@ -161,8 +163,6 @@ def apply_cli_overrides(cfg: ExperimentConfig, args: Any) -> ExperimentConfig:
         cfg.fix_round_cap = False
     if getattr(args, "online", False):
         cfg.offline = False
-    if getattr(args, "price_tolerance", None) is not None:
-        cfg.price_tolerance = args.price_tolerance
     # 人物资料：--personas 使用默认文件；--buyer/seller-persona-file 可单独覆盖
     if getattr(args, "personas", False):
         cfg.buyer_persona_file = str(PERSONA_DIR / "bezos.txt")
@@ -192,6 +192,8 @@ def add_common_cli_args(parser: Any) -> None:
                         help="推理后端（默认 hf；无 NVIDIA 显卡时推荐 gguf）")
     parser.add_argument("--model-path", dest="model_path", help="本地模型目录")
     parser.add_argument("--device", choices=["auto", "cuda", "mps", "cpu"])
+    parser.add_argument("--cache-gb", dest="cache_gb", type=float,
+                        help="gguf 后端的 prompt 缓存（GB），如 2；只加速、不改变规则")
     parser.add_argument("--dtype", choices=["auto", "float32", "bfloat16", "float16"],
                         help="模型精度；CPU 上 bf16 很慢时试 float32（需约 16 GB 内存）")
     parser.add_argument("--initial-price", dest="initial_price", type=float, help="卖方初始要价（百万美元）")
@@ -207,8 +209,6 @@ def add_common_cli_args(parser: Any) -> None:
     parser.add_argument("--buyer-template", dest="buyer_template", help="prompts/ 下的买方模板文件名")
     parser.add_argument("--seller-template", dest="seller_template", help="prompts/ 下的卖方模板文件名")
     parser.add_argument("--output-dir", dest="output_dir")
-    parser.add_argument("--price-tolerance", dest="price_tolerance", type=float,
-                        help="双方报价相差不超过该值即成交（论文版示例为 0；正式实验用 5）")
     parser.add_argument("--personas", action="store_true",
                         help="加入人物公开资料（personas/bezos.txt、personas/graham.txt）")
     parser.add_argument("--buyer-persona-file", dest="buyer_persona_file", help="买方人物资料文件")

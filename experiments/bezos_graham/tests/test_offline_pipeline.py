@@ -120,12 +120,31 @@ class TestPersonasAndTolerance(unittest.TestCase):
         self.assertIsNone(num(400).search(bp))
         self.assertNotIn("250 million", bp + sp)          # 不泄露历史成交价
 
-    def test_price_tolerance_closes_near_miss(self):
-        cfg = self._cfg_from_cli("--price-tolerance", "5")
-        with tempfile.TemporaryDirectory() as d:
-            rec = run_episode(cfg, ScriptedLLM([300, 335], [350, 337.5]), 0, Path(d))
-        self.assertEqual((rec["status"], rec["rounds"]), ("agreed", 2))
-        self.assertAlmostEqual(rec["agreed_price"], 336.25)   # 上游取双方报价的平均
+
+class TestBuyerVariants(unittest.TestCase):
+    """第 2 部分：变体只改买方，且只是在 Table 14 原文基础上“增加”内容。"""
+
+    VARIANTS = ["buyer_A1_disciplined.txt", "buyer_A2_leverage.txt"]
+
+    def test_variants_keep_every_table14_line(self):
+        base = [l for l in (PROMPT_DIR / "buyer_table14.txt").read_text(encoding="utf-8").splitlines() if l.strip()]
+        for v in self.VARIANTS:
+            text = (PROMPT_DIR / v).read_text(encoding="utf-8")
+            pos = 0
+            for line in base:
+                idx = text.find(line, pos)
+                self.assertNotEqual(idx, -1, f"{v} 缺少 Table 14 原文行: {line!r}")
+                pos = idx + len(line)
+
+    def test_variants_render_and_seller_prompt_unchanged(self):
+        _, seller_default = first_round_prompts(quiet_cfg(seller_persona="X"))
+        for v in self.VARIANTS:
+            bp, sp = first_round_prompts(quiet_cfg(buyer_template=v, seller_persona="X"))
+            self.assertIn("NEGOTIATION STRATEGY", bp)
+            self.assertIsNone(re.search(r"\{[a-z_]+\}", bp))
+            self.assertNotIn("350", sp)
+            # 卖方 prompt 只取决于对话内容；ScriptedLLM 的买方开场白相同，所以卖方 prompt 应完全一致
+            self.assertEqual(sp, seller_default)
 
 
 class TestEnvironmentBehaviour(unittest.TestCase):
