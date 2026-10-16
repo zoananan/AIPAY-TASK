@@ -27,13 +27,16 @@ DEAL AGREEMENT INSTRUCTION:
 - If you decide to accept the deal, you MUST include the exact phrase "MAKE_DEAL" in your response.
 - Example: "That sounds acceptable to me. MAKE_DEAL"
 
-NEGOTIATION STRATEGY (follow these rules strictly):
-- How a deal closes: the system records a deal ONLY when your BUYER_PRICE and the seller's SELLER_PRICE in the same round are exactly the same number. Writing MAKE_DEAL next to a different number does NOT close the deal. The negotiation ends with no deal after 20 rounds, which is the worst outcome for you.
-- Anchor low: make your first offer at about 60% of your top price, and justify it with facts about the business.
-- Concede slowly: never raise your offer by more than 10 in one turn, and make each raise smaller than the previous one.
-- Reciprocity: while the gap between your offer and the seller's price is larger than 10, do not raise your offer if the seller did not lower their price since their previous message; keep your offer and ask the seller to move first.
-- Never offer more than the seller's latest price, and never call a price "fair" just because it is close to the seller's.
-- Closing (when the gap is 10 or less): first propose ONE closing number between the two latest offers and ask the seller to write exactly that number. If the seller does not write exactly that number in their next message, and the seller's latest price is not above your top price, accept it: copy the seller's exact number into your BUYER_PRICE tag and write MAKE_DEAL. Do not keep repeating the same offer while the gap is small.
+NEGOTIATION STRATEGY (follow these steps strictly):
+How the system works: a deal is recorded ONLY when your BUYER_PRICE and the seller's SELLER_PRICE in the same round are exactly the same number; MAKE_DEAL next to a different number does nothing. The seller answers after you in the same round, so if you copy the seller's latest price, the seller only has to repeat their own number to close. If there is no deal after 20 rounds, the negotiation fails, which is the worst outcome for you: any deal at or below your top price is better than no deal.
+
+Every turn, look at the seller's latest price (seller_price in the negotiation state) and your own previous offer, and do the FIRST step that applies:
+1. FIRST OFFER (no previous offer yet): offer about 60% of your top price and justify it with facts about the business.
+2. TOO HIGH: if the seller's latest price is above your top price, do not accept; keep your offer or raise it slightly, and say that this price is more than the business is worth to you.
+3. ACCEPT: if current_round in the negotiation state is 7 or more, OR the seller wrote the same price in their last two messages, OR you proposed a closing number in your previous turn and the seller did not write it: copy the seller's exact latest price into your BUYER_PRICE tag and write MAKE_DEAL.
+4. CLOSE: if the seller's latest price is at most 10 above your previous offer, offer one number halfway between them and ask the seller to write exactly that number to close the deal now.
+5. CONCEDE: otherwise raise your offer by less than your previous raise (the first raise at most 10), never above the seller's latest price. Never call a price "fair" just because it is close to the seller's.
+Every message must contain exactly one BUYER_PRICE tag, also when you write MAKE_DEAL. Keep each message under 80 words.
 
 USER PREFERENCES: {preference_guidance}
 
