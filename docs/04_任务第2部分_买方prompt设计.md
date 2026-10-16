@@ -192,3 +192,16 @@ python experiments/bezos_graham/run_experiments.py --runs 10 --tag A2_leverage -
 - 实现细节：套用 Qwen 的聊天模板；对话历史只放进 prompt 一次（上游会放两次）。
 
 因此 A0_paper_default 与 A0_personas 的差别只有人物资料，对应第 1 部分；A0_personas、A1、A2 之间的差别只在买方的策略段和议价筹码段，对应第 2 部分“只改买方 prompt”。
+
+
+## 附：“差一点就成交却锁死”与论文结论的对照
+
+论文对这一现象有明确记录（页码按 arXiv 2602.06008 PDF）：
+
+- **Table 1（第 6 页）**：三个闭源模型的成交率都是 100%，超时率都是 0%；开源模型 Qwen3-14B 超时率 20.7%，Llama-3.1-8B 超时率 48.6%，平均轮数分别为 7.8 和 15.0（闭源模型约 3.7–4.8 轮）。
+- **Table 7 与 “Timeout Failures Reflect Model Capability Rather Than Task Structure”（第 8 页）**：所有失败都是超时，并且均匀分布在各类任务中。论文据此认为，失败来自模型本身的局限（推理深度不足、收敛策略差），而不是任务结构。
+- **Table 8 与 “Near-Miss Failures Reveal Convergence Deficiencies in Open-Weight Models”（第 8 页）**：Qwen3-14B 有 43.5% 的失败、Llama-3.1-8B 有 46.3% 的失败，发生在双方报价差距不超过 5 的时候，“一次让步就能弥合”。论文的结论是：开源模型能完成价格发现、进入议价区间，但缺乏走完“最后一公里”（last mile）的能力。
+- **评分设计（第 5 页）**：论文设置“适度的失败惩罚 F，以抑制僵局（deadlock）”，说明作者在设计时就预见到了这种情况。
+- **Table 16（附录 C）**：GPT-5.2 的示例对话中，双方在 133 对 134 时，卖方直接 “meet your number”，报出买方的数字成交。这正是小模型做不到的那一步“跳跃”。
+
+本实验的观察与论文一致，并补充了论文没有分析的具体机制：在锁死的运行中，双方从某一轮起逐字重复自己上一轮的发言，因此错过首次成交机会后，局面几乎不会再变化（见 `analyze_closing.py` 的 `buyer_repeats` 与 `missed_accepts`）。另外，本实验使用的 Qwen3-4B 比论文中的 Qwen3-14B 更小，并且采用 temperature 0.7（论文为 temperature 0、seed 0），所以失败率高于论文中的开源模型是可以预期的。
