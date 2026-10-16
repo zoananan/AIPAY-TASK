@@ -90,6 +90,20 @@ A2 = A1 + 议价筹码，策略段与 A1 完全相同，因此同步更新为 v3
 - **直接报中点 275**：买方不知道卖方底价，无法计算中点。只能通过低开价、慢让步让卖方自己降下来。
 - **修改成交规则**：已决定保持论文原样（price_tolerance = 0）。
 
+### 3.4 消融实验：买方的“心理截止轮”
+
+v3 的第 8 轮截止条款有一个取舍：卖方已经停住时，“卖方连续同价”这一条会先触发，截止条款不起作用；截止条款真正生效时，往往是卖方**还在降价**的时候。这时接受报价，可能放弃后续的降价空间（多等一轮约损失 1% 分数，相当于价格约 160 万美元）。所以我们把买方的心理截止轮作为一个变量：
+
+| 组 | 文件 | 截止条款 |
+|---|---|---|
+| A1（截止 8） | `buyer_A1_disciplined.txt` | `current_round ≥ 7`（第 8 轮） |
+| A1-d12（截止 12） | `buyer_A1_deadline12.txt` | `current_round ≥ 11`（第 12 轮） |
+| A1-nod（无截止） | `buyer_A1_nodeadline.txt` | 删除截止条款，只保留“卖方连续同价”和“收尾价没被照写”两个接受条件 |
+
+三个文件除这一处外逐字相同（单元测试会检查），卖方 prompt、人物资料、环境的 20 轮上限都不变。
+
+用 `analyze_closing.py` 统计每次成交是怎么达成的：是买方照抄卖方报价，还是卖方照抄买方报价；买方照抄时触发了哪条接受条件；触发时卖方是否还在降价。重点关注两个数字：**截止条款参与成交的次数**和**截止条款触发时卖方仍在降价的次数**。再对照三组的平均成交价、成交率、平均轮数和论文分数，判断截止轮的最优位置。
+
 ## 4. 运行命令
 
 三组都在同一台电脑、同样的参数下运行：
@@ -100,6 +114,10 @@ python experiments/bezos_graham/run_experiments.py --runs 10 --tag A0_personas -
 
 # A1：+ 谈判策略
 python experiments/bezos_graham/run_experiments.py --runs 10 --tag A1_disciplined --quiet --backend gguf --model-path D:\models\Qwen3-4B-Instruct-2507-Q8_0.gguf --max-new-tokens 300 --personas --buyer-template buyer_A1_disciplined.txt
+
+# 消融（可选）：买方截止轮 12 / 无截止
+python experiments/bezos_graham/run_experiments.py --runs 10 --tag A1d12 --quiet --backend gguf --model-path D:\models\Qwen3-4B-Instruct-2507-Q8_0.gguf --max-new-tokens 300 --personas --buyer-template buyer_A1_deadline12.txt
+python experiments/bezos_graham/run_experiments.py --runs 10 --tag A1nod --quiet --backend gguf --model-path D:\models\Qwen3-4B-Instruct-2507-Q8_0.gguf --max-new-tokens 300 --personas --buyer-template buyer_A1_nodeadline.txt
 
 # A2：+ 谈判策略 + 议价筹码
 python experiments/bezos_graham/run_experiments.py --runs 10 --tag A2_leverage --quiet --backend gguf --model-path D:\models\Qwen3-4B-Instruct-2507-Q8_0.gguf --max-new-tokens 300 --personas --buyer-template buyer_A2_leverage.txt

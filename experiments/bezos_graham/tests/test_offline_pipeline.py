@@ -230,6 +230,43 @@ class TestPersonaPipeline(unittest.TestCase):
                 pp.LLM_DIR = old
 
 
+class TestDeadlineAblation(unittest.TestCase):
+    """截止轮消融：三个 A1 文件只在截止条款上不同；分析脚本能识别成交方式。"""
+
+    def test_deadline_variants_differ_only_in_deadline_clause(self):
+        base = (PROMPT_DIR / "buyer_A1_disciplined.txt").read_text(encoding="utf-8")
+        clause = "current_round in the negotiation state is 7 or more, OR "
+        self.assertEqual((PROMPT_DIR / "buyer_A1_deadline12.txt").read_text(encoding="utf-8"),
+                         base.replace(clause, "current_round in the negotiation state is 11 or more, OR "))
+        self.assertEqual((PROMPT_DIR / "buyer_A1_nodeadline.txt").read_text(encoding="utf-8"),
+                         base.replace(clause, ""))
+
+    def test_analyze_closing(self):
+        import analyze_closing as ac
+
+        def rec(b, s, deal, prompt):
+            turns = []
+            for i, (pb, ps) in enumerate(zip(b, s), 1):
+                turns += [{"round": i, "role": "buyer", "env_parsed_price": pb},
+                          {"round": i, "role": "seller", "env_parsed_price": ps}]
+            return {"run_idx": 0, "status": "agreed" if deal else "timeout", "rounds": len(b), "deal": deal,
+                    "agreed_price": b[-1] if deal else None, "turns": turns, "first_prompts": {"buyer": prompt}}
+
+        dl8 = (PROMPT_DIR / "buyer_A1_disciplined.txt").read_text(encoding="utf-8")
+        # 卖方停在 290 → 买方第 6 轮照抄 290：卖方停住触发，不是截止轮
+        r = ac.analyze_run(rec([210, 220, 228, 234, 238, 290], [350, 320, 300, 290, 290, 290], True, dl8))
+        self.assertEqual((r["closed_by"], r["triggers"], r["deadline_round"]),
+                         ("buyer_copied_seller", "seller_stalled", 8))
+        # 卖方第 7 轮还在降（305→300），买方第 8 轮照抄 300：截止轮触发，且卖方当时还在降价
+        r = ac.analyze_run(rec([210, 220, 228, 234, 238, 241, 243, 300],
+                               [350, 340, 330, 320, 310, 305, 300, 300], True, dl8))
+        self.assertIn("deadline", r["triggers"])
+        self.assertIs(r["seller_still_lowering"], True)
+        nod = (PROMPT_DIR / "buyer_A1_nodeadline.txt").read_text(encoding="utf-8")
+        r = ac.analyze_run(rec([210, 285], [290, 290], False, nod))
+        self.assertEqual((r["closed_by"], r["deadline_round"]), ("timeout", "none"))
+
+
 class TestBuyerVariants(unittest.TestCase):
     """第 2 部分：变体只改买方，且只是在 Table 14 原文基础上“增加”内容。"""
 
