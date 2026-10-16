@@ -45,6 +45,30 @@ def deadline_round(record: Dict[str, Any]) -> Optional[int]:
     return int(m.group(1) or m.group(2)) + 1 if m else None          # state 里的 current_round 从 0 起算
 
 
+def buyer_repeats(record: Dict[str, Any]) -> int:
+    """买方消息与自己上一条消息完全相同（去掉首尾空白）的次数：衡量“照抄自己上一轮”。"""
+    texts = [x.get("text", "").strip() for x in record["turns"] if x["role"] == "buyer"]
+    return sum(1 for a, b in zip(texts, texts[1:]) if a and a == b)
+
+
+def missed_accepts(record: Dict[str, Any], b: Dict[int, Optional[float]], s: Dict[int, Optional[float]]) -> int:
+    """v5 规定应该接受、但买方没有照抄卖方报价的轮数。
+    条件：买方发言时 state 里卖方报价不超过买方上限，且差距 <= 5，或已到截止轮。"""
+    dl = deadline_round(record)
+    top = 350.0
+    m = re.search(r"Your top price is \$([\d.]+)", record.get("first_prompts", {}).get("buyer", ""))
+    if m:
+        top = float(m.group(1))
+    n = 0
+    for t in range(2, record["rounds"] + 1):
+        sp, bp, now = s.get(t - 1), b.get(t - 1), b.get(t)
+        if None in (sp, bp, now) or sp > top:
+            continue
+        if (sp - bp <= 5 or (dl is not None and t >= dl)) and now != sp:
+            n += 1
+    return n
+
+
 def analyze_run(record: Dict[str, Any]) -> Dict[str, Any]:
     b, s = offers(record, "buyer"), offers(record, "seller")
     dl = deadline_round(record)
@@ -53,7 +77,9 @@ def analyze_run(record: Dict[str, Any]) -> Dict[str, Any]:
                            "closed_by": "", "triggers": "", "seller_still_lowering": "", "seller_last_drop": "",
                            # 买方只发了价格标签、没有任何文字的消息数（v3 试运行中的主要失败模式）
                            "buyer_tag_only": sum(1 for x in record["turns"] if x["role"] == "buyer"
-                                                 and TAG_ONLY_RE.fullmatch(x.get("text", "")))}
+                                                 and TAG_ONLY_RE.fullmatch(x.get("text", ""))),
+                           "buyer_repeats": buyer_repeats(record),
+                           "missed_accepts": missed_accepts(record, b, s)}
     if not record["deal"]:
         lb, ls = b.get(record["rounds"]), s.get(record["rounds"])
         row["closed_by"] = "timeout"
@@ -92,7 +118,7 @@ def main() -> None:
     p.add_argument("dirs", nargs="+", help="run_experiments.py 生成的结果目录")
     args = p.parse_args()
     fields = ["run", "status", "rounds", "price", "deadline_round", "closed_by", "triggers",
-              "seller_still_lowering", "seller_last_drop", "buyer_tag_only"]
+              "seller_still_lowering", "seller_last_drop", "buyer_tag_only", "buyer_repeats", "missed_accepts"]
     for d in map(Path, args.dirs):
         runs = sorted(d.glob("run_[0-9][0-9].json"))
         if not runs:
@@ -110,6 +136,8 @@ def main() -> None:
         deals = [r for r in rows if r["status"] == "agreed"]
         dl_hits = [r for r in deals if "deadline" in str(r["triggers"])]
         dl_moving = [r for r in dl_hits if r["seller_still_lowering"] is True]
+        print(f"buyer messages identical to its previous message: {sum(r['buyer_repeats'] for r in rows)}; "
+              f"rounds where v5 required accepting but the buyer did not: {sum(r['missed_accepts'] for r in rows)}")
         print(f"deals {len(deals)}/{len(rows)}; closed by buyer copying seller: "
               f"{sum(r['closed_by'] == 'buyer_copied_seller' for r in deals)}; "
               f"deadline involved: {len(dl_hits)}; deadline while seller still lowering: {len(dl_moving)}")
