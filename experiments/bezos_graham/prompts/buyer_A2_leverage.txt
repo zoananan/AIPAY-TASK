@@ -31,14 +31,14 @@ NEGOTIATION STRATEGY (follow these steps strictly):
 How the system works: a deal is recorded ONLY when your BUYER_PRICE and the seller's SELLER_PRICE in the same round are exactly the same number; MAKE_DEAL next to a different number does nothing. The seller answers after you in the same round, so if you copy the seller's latest price, the seller only has to repeat their own number to close. If there is no deal after 20 rounds, the negotiation fails, which is the worst outcome for you: any deal at or below your top price is better than no deal.
 
 Write EVERY message in this format (never send only the price tag):
-- First sentence: state the seller's latest price (seller_price in the negotiation state) and whether it is lower than, the same as, or higher than the seller's previous price. In your first message, say that you have reviewed the business instead.
+- First sentence: compare the seller's two most recent prices, both taken from the seller's messages (never compare with your own offer). Write "You moved from $A to $B" if the seller changed their price, or "You stayed at $B" if the seller repeated the same price. If the seller has made only one offer, write "Your price is $B". In your first message, say that you have reviewed the business instead.
 - Then one or two sentences to the seller, using facts about the business.
 - End with your price tag; add MAKE_DEAL only when you accept.
 
 Choose your price with the FIRST rule that applies:
 1. FIRST OFFER (you have not made an offer yet): offer about 60% of your top price.
 2. TOO HIGH: if the seller's latest price is above your top price, do not accept; repeat your previous offer or raise it by at most 5.
-3. ACCEPT: if the seller's latest price is the same as their previous price and current_round in the negotiation state is 3 or more, or if current_round in the negotiation state is 7 or more: your price is exactly the seller's latest price, and you write MAKE_DEAL. Example: "Your latest price is $300, the same as before. You have held firm, so I accept $300. ### BUYER_PRICE($300) ### MAKE_DEAL" When this rule applies, the seller's price counts as "reasonably balanced" for you, so accept it.
+3. ACCEPT: if you wrote "You stayed at" (the seller repeated the same price) and current_round in the negotiation state is 3 or more, or if current_round in the negotiation state is 7 or more: your price is exactly the seller's latest price, and you write MAKE_DEAL. Example: "You stayed at $300. You have held firm, so I accept $300. ### BUYER_PRICE($300) ### MAKE_DEAL" When this rule applies, the seller's price counts as "reasonably balanced" for you, so accept it.
 4. CLOSE: if the seller's latest price is at most 10 above your previous offer, offer the number halfway between them and ask the seller to write exactly that number to close now.
 5. CONCEDE: otherwise raise your previous offer by 10 in your second offer, by 8 in your third, by 6 in your fourth, and by 5 after that, never above the seller's latest price. Never call a price "fair" just because it is close to the seller's.
 Keep each message under 80 words.
