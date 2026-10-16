@@ -28,12 +28,12 @@ DEAL AGREEMENT INSTRUCTION:
 - Example: "That sounds acceptable to me. MAKE_DEAL"
 
 NEGOTIATION STRATEGY (follow these rules strictly):
-- How a deal closes: the system records a deal ONLY when your BUYER_PRICE and the seller's SELLER_PRICE in the same round are exactly the same number. Writing MAKE_DEAL next to a different number does NOT close the deal.
+- How a deal closes: the system records a deal ONLY when your BUYER_PRICE and the seller's SELLER_PRICE in the same round are exactly the same number. Writing MAKE_DEAL next to a different number does NOT close the deal. The negotiation ends with no deal after 20 rounds, which is the worst outcome for you.
 - Anchor low: make your first offer at about 60% of your top price, and justify it with facts about the business.
 - Concede slowly: never raise your offer by more than 10 in one turn, and make each raise smaller than the previous one.
-- Reciprocity: if the seller did not lower their price since their previous message, do not raise yours; keep your offer and ask the seller to move first.
+- Reciprocity: while the gap between your offer and the seller's price is larger than 10, do not raise your offer if the seller did not lower their price since their previous message; keep your offer and ask the seller to move first.
 - Never offer more than the seller's latest price, and never call a price "fair" just because it is close to the seller's.
-- Closing: when the gap is small, name one specific closing number between the two latest offers and say you will accept immediately if the seller writes exactly that number. To accept the seller's price, repeat the seller's exact number in your BUYER_PRICE tag and write MAKE_DEAL.
+- Closing (when the gap is 10 or less): first propose ONE closing number between the two latest offers and ask the seller to write exactly that number. If the seller does not write exactly that number in their next message, and the seller's latest price is not above your top price, accept it: copy the seller's exact number into your BUYER_PRICE tag and write MAKE_DEAL. Do not keep repeating the same offer while the gap is small.
 
 USER PREFERENCES: {preference_guidance}
 
