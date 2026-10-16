@@ -27,7 +27,10 @@ import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-DEADLINE_RE = re.compile(r"current_round in the negotiation state is (\d+) or more")
+TAG_ONLY_RE = re.compile(r"\s*\**\s*###\s*BUYER_PRICE\(\$[\d.,]+\)\s*###\s*\**\s*")
+# v4 写法 “..., or if current_round ... is 7 or more”；v3 写法 “if current_round ... is 7 or more, OR ...”
+DEADLINE_RE = re.compile(r"or if current_round in the negotiation state is (\d+) or more"
+                         r"|if current_round in the negotiation state is (\d+) or more, OR")
 
 
 def offers(record: Dict[str, Any], role: str) -> Dict[int, Optional[float]]:
@@ -37,7 +40,7 @@ def offers(record: Dict[str, Any], role: str) -> Dict[int, Optional[float]]:
 def deadline_round(record: Dict[str, Any]) -> Optional[int]:
     """从买方实际收到的 prompt 中读出截止轮（1 起算）；没有截止条款时返回 None。"""
     m = DEADLINE_RE.search(record.get("first_prompts", {}).get("buyer", ""))
-    return int(m.group(1)) + 1 if m else None          # state 里的 current_round 从 0 起算
+    return int(m.group(1) or m.group(2)) + 1 if m else None          # state 里的 current_round 从 0 起算
 
 
 def analyze_run(record: Dict[str, Any]) -> Dict[str, Any]:
@@ -45,7 +48,10 @@ def analyze_run(record: Dict[str, Any]) -> Dict[str, Any]:
     dl = deadline_round(record)
     row: Dict[str, Any] = {"run": record["run_idx"], "status": record["status"], "rounds": record["rounds"],
                            "price": record["agreed_price"], "deadline_round": dl or "none",
-                           "closed_by": "", "triggers": "", "seller_still_lowering": "", "seller_last_drop": ""}
+                           "closed_by": "", "triggers": "", "seller_still_lowering": "", "seller_last_drop": "",
+                           # 买方只发了价格标签、没有任何文字的消息数（v3 试运行中的主要失败模式）
+                           "buyer_tag_only": sum(1 for x in record["turns"] if x["role"] == "buyer"
+                                                 and TAG_ONLY_RE.fullmatch(x.get("text", "")))}
     if not record["deal"]:
         lb, ls = b.get(record["rounds"]), s.get(record["rounds"])
         row["closed_by"] = "timeout"
@@ -81,7 +87,7 @@ def main() -> None:
     p.add_argument("dirs", nargs="+", help="run_experiments.py 生成的结果目录")
     args = p.parse_args()
     fields = ["run", "status", "rounds", "price", "deadline_round", "closed_by", "triggers",
-              "seller_still_lowering", "seller_last_drop"]
+              "seller_still_lowering", "seller_last_drop", "buyer_tag_only"]
     for d in map(Path, args.dirs):
         runs = sorted(d.glob("run_[0-9][0-9].json"))
         if not runs:

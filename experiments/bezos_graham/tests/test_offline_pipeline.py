@@ -235,9 +235,9 @@ class TestDeadlineAblation(unittest.TestCase):
 
     def test_deadline_variants_differ_only_in_deadline_clause(self):
         base = (PROMPT_DIR / "buyer_A1_disciplined.txt").read_text(encoding="utf-8")
-        clause = "current_round in the negotiation state is 7 or more, OR "
+        clause = ", or if current_round in the negotiation state is 7 or more"
         self.assertEqual((PROMPT_DIR / "buyer_A1_deadline12.txt").read_text(encoding="utf-8"),
-                         base.replace(clause, "current_round in the negotiation state is 11 or more, OR "))
+                         base.replace(clause, ", or if current_round in the negotiation state is 11 or more"))
         self.assertEqual((PROMPT_DIR / "buyer_A1_nodeadline.txt").read_text(encoding="utf-8"),
                          base.replace(clause, ""))
 
