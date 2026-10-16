@@ -9,7 +9,8 @@
     seller_copied_buyer   卖方照抄了买方本轮的报价
     other                 其他（双方同时报出同一个新数字）
 对买方照抄的情况，再判断触发了哪条 ACCEPT 条件（可能同时满足多条）：
-    small_gap       买方发言时双方差距 <= 10（v5 的接受条件）
+    small_gap       买方发言时双方差距 <= 5（v5 的接受条件）
+另外统计“卖方照抄买方中间价”成交的次数（closed_by = seller_copied_buyer）。
     deadline        已到买方 prompt 里的截止轮
     seller_stalled  卖方最近两条消息报价相同
     ignored_close   买方上一轮提出了收尾价（差距 <= 10），卖方没有照写
@@ -65,8 +66,8 @@ def analyze_run(record: Dict[str, Any]) -> Dict[str, Any]:
         trig = []
         if dl is not None and t >= dl:
             trig.append("deadline")
-        # v5 的接受条件：买方发言时 state 里的 seller_price（第 t-1 轮卖方报价）减 buyer_price（第 t-1 轮买方报价）<= 10
-        if None not in (s.get(t - 1), b.get(t - 1)) and s[t - 1] - b[t - 1] <= 10:
+        # v5 的接受条件：买方发言时 state 里的 seller_price（第 t-1 轮卖方报价）减 buyer_price（第 t-1 轮买方报价）<= 5
+        if None not in (s.get(t - 1), b.get(t - 1)) and s[t - 1] - b[t - 1] <= 5:
             trig.append("small_gap")
         if t >= 3 and s.get(t - 1) is not None and s.get(t - 1) == s.get(t - 2):
             trig.append("seller_stalled")
