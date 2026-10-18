@@ -1,0 +1,19 @@
+{
+  "n_runs": 10,
+  "n_deals": 3,
+  "deal_rate": 0.3,
+  "n_deals_in_zone": 3,
+  "avg_final_price": 330.0,
+  "std_final_price": 18.027756377319946,
+  "min_final_price": 315.0,
+  "max_final_price": 350.0,
+  "avg_rounds": 15.0,
+  "avg_rounds_deals_only": 3.3333333333333335,
+  "timeout_rate": 0.7,
+  "tag_compliance": 1.0,
+  "avg_upstream_global_score": 17.859470373570925,
+  "avg_upstream_buyer_score": 13.257148156770924,
+  "avg_upstream_seller_score": 24.987631822770922,
+  "avg_paper_buyer_score": 13.497119350273659,
+  "tag": "A0_paper_default_q8"
+}

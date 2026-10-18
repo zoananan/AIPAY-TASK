@@ -1,0 +1,32 @@
+# Output of: python experiments/bezos_graham/analyze_closing.py <A1 folder> <A2 folder>
+# (run on the user's machine on 2026-10-17; copied verbatim from the terminal)
+
+=== A1_disciplined_gguf_20261016_144558  (buyer deadline round: 8) ===
+         run |       status |       rounds |        price | deadline_round |    closed_by |     triggers | seller_still_lowering| seller_last_drop | buyer_tag_only | buyer_repeats | missed_accepts
+           0 |       agreed |            4 |        277.5 |            8 | seller_copied_buyer |              |              |           |            0 |            0 |            1
+           1 |      timeout |           20 |         None |            8 |      timeout | final gap 2.5 |              |     |            0 |           14 |           16
+           2 |       agreed |            5 |        307.5 |            8 | buyer_copied_seller | small_gap+ignored_close |  True |          2.5 |            0 |            0 |            0
+           3 |      timeout |           20 |         None |            8 |      timeout |  final gap 5 |              |    |            0 |            7 |           17
+           4 |       agreed |            4 |        297.5 |            8 | buyer_copied_seller |    small_gap |         True |       2.5 |            0 |            0 |            0
+           5 |       agreed |            3 |        270.0 |            8 | buyer_copied_seller |    small_gap |         True |      30.0 |            0 |            0 |            0
+           6 |       agreed |            4 |        295.0 |            8 | buyer_copied_seller |    small_gap |         True |       5.0 |            0 |            0 |            0
+           7 |       agreed |            4 |        310.0 |            8 | seller_copied_buyer |              |              |           |            0 |            0 |            0
+           8 |       agreed |            5 |        300.0 |            8 | buyer_copied_seller | small_gap+seller_stalled+ignored_close |        False |          0.0 |            0 |            0 |            0
+           9 |       agreed |            3 |        260.0 |            8 | buyer_copied_seller |    small_gap |         True |      40.0 |            0 |            0 |            0
+buyer messages identical to its previous message: 21; rounds where v5 required accepting but the buyer did not: 34
+deals 8/10; closed by buyer copying seller: 6; deadline involved: 0; deadline while seller still lowering: 0
+
+=== A2_leverage_gguf_20261016_194644  (buyer deadline round: 8) ===
+         run |       status |       rounds |        price | deadline_round |    closed_by |     triggers | seller_still_lowering| seller_last_drop | buyer_tag_only | buyer_repeats | missed_accepts
+           0 |       agreed |            4 |        255.0 |            8 | buyer_copied_seller |    small_gap |         True |       5.0 |            0 |            0 |            0
+           1 |       agreed |            3 |        262.5 |            8 | seller_copied_buyer |              |              |           |            0 |            0 |            0
+           2 |       agreed |            4 |        255.0 |            8 | buyer_copied_seller |    small_gap |         True |       5.0 |            0 |            0 |            0
+           3 |       agreed |            5 |        305.0 |            8 | buyer_copied_seller |    small_gap |         True |       5.0 |            0 |            0 |            0
+           4 |      timeout |           20 |         None |            8 |      timeout |  final gap 3 |              |    |            0 |            9 |           17
+           5 |       agreed |            4 |        315.0 |            8 | buyer_copied_seller |    small_gap |         True |       5.0 |            0 |            0 |            0
+           6 |      timeout |           20 |         None |            8 |      timeout |  final gap 5 |              |    |            0 |            6 |           17
+           7 |      timeout |           20 |         None |            8 |      timeout | final gap 2.5 |              |     |            0 |           15 |            0
+           8 |       agreed |            4 |        277.5 |            8 | seller_copied_buyer |              |              |           |            0 |            0 |            1
+           9 |      timeout |           20 |         None |            8 |      timeout |  final gap 5 |              |    |            0 |           10 |           17
+buyer messages identical to its previous message: 40; rounds where v5 required accepting but the buyer did not: 52
+deals 6/10; closed by buyer copying seller: 4; deadline involved: 0; deadline while seller still lowering: 0

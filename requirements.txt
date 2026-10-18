@@ -6,6 +6,11 @@ transformers>=4.51.0        # Qwen3 架构需要 >= 4.51.0，否则报 KeyError:
 huggingface_hub>=0.23       # 只在 download_model.py 下载模型时用到
 accelerate>=0.26            # 可选：transformers 的部分加载路径会用到
 
+# 报告中全部实验使用的 CPU 后端（--backend gguf，Q8_0 GGUF 文件）
+# Windows 无编译器时可用预编译轮子：
+#   pip install llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
+llama-cpp-python>=0.3.0
+
 # 可选：Linux + NVIDIA GPU 想用 vLLM 加速时再装（Windows 不支持）
 # vllm>=0.10.0
 

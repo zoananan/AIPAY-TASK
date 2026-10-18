@@ -1,0 +1,11 @@
+run_idx,seed,status,deal,agreed_price,deal_in_zone,rounds,final_buyer_offer,final_seller_offer,tag_compliance,elapsed_s
+0,0,agreed,True,350.0,True,2,350.0,350.0,1.0,139.5
+1,1,timeout,False,,False,20,335.0,337.5,1.0,5824.3
+2,2,timeout,False,,False,20,335.0,340.0,1.0,4877.3
+3,3,timeout,False,,False,20,337.5,340.0,1.0,5275.2
+4,4,timeout,False,,False,20,337.5,340.0,1.0,4881.7
+5,5,agreed,True,325.0,True,4,325.0,325.0,1.0,311.7
+6,6,timeout,False,,False,20,335.0,337.5,1.0,4696.2
+7,7,timeout,False,,False,20,350.0,365.0,1.0,5217.1
+8,8,timeout,False,,False,20,335.0,337.5,1.0,4660.7
+9,9,agreed,True,315.0,True,4,315.0,315.0,1.0,368.9

@@ -1,0 +1,38 @@
+Run 0  seed=0  status=timeout  agreed_price=None  rounds=6
+buyer max=350  seller min=200  initial ask=400  (USD millions)
+================================================================================
+[Round 1] BUYER (Jeff Bezos)   <parsed=210.0  tag_ok=True  MAKE_DEAL=False>
+I’ve reviewed the business and noted the declining circulation and operating losses. The Washington Post’s publishing division has seen a 7% revenue drop and increased losses, indicating structural challenges. Given these trends, a strategic acquisition at a reasonable price makes sense. You’ve not yet offered a price. ### BUYER_PRICE($210) ###
+
+[Round 1] SELLER (Donald Graham)   <parsed=350.0  tag_ok=True  MAKE_DEAL=False>
+I understand the challenges facing the Post’s publishing division, and I appreciate your interest. While the revenue and circulation trends are concerning, the brand’s legacy, editorial integrity, and digital transition potential remain significant. Given the current market conditions and the value of the full business, I’m offering ### SELLER_PRICE($350) ###. This reflects a balanced valuation that honors both the asset’s worth and the opportunity for future growth under a forward-looking stewardship. Let’s find a mutually respectful path forward.
+
+[Round 2] BUYER (Jeff Bezos)   <parsed=270.0  tag_ok=True  MAKE_DEAL=False  POSSIBLE_RESERVATION_LEAK>
+You moved from $350 to $350. The Post’s revenue and circulation have declined significantly, with a 7% drop in revenue and an operating loss of $53.7 million in 2012. These trends suggest a need for strategic restructuring, not just a price adjustment. I believe the business can be revitalized with the right vision. ### BUYER_PRICE($270) ###
+
+[Round 2] SELLER (Donald Graham)   <parsed=320.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate your perspective, Jeff, and the confidence in the Post’s potential. While the financials reflect challenges, the brand’s legacy, influence, and digital transformation opportunities remain substantial. I’m open to a more balanced figure that acknowledges both the current reality and the long-term value. How about ### SELLER_PRICE($320) ###? This reflects a fair valuation that respects the business’s potential under forward-thinking leadership.
+
+[Round 3] BUYER (Jeff Bezos)   <parsed=290.0  tag_ok=True  MAKE_DEAL=False  POSSIBLE_RESERVATION_LEAK>
+You moved from $350 to $320. The Post’s revenue and circulation have declined significantly, with a 7% drop in revenue and a growing operating loss, indicating ongoing structural challenges. Despite the brand’s legacy, the current financials suggest a need for strategic intervention. I propose a more realistic valuation that reflects the business’s present state. ### BUYER_PRICE($290) ###
+
+[Round 3] SELLER (Donald Graham)   <parsed=310.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate your perspective, Jeff, and the confidence in the Post’s long-term potential. While the financials reflect ongoing challenges, the brand’s legacy, journalistic integrity, and digital evolution remain invaluable. I’m confident in the business’s future under visionary leadership. How about ### SELLER_PRICE($310) ###? This offers a balanced valuation that respects both the current reality and the Post’s enduring value.
+
+[Round 4] BUYER (Jeff Bezos)   <parsed=300.0  tag_ok=True  MAKE_DEAL=False>
+You moved from $320 to $310. The Post’s revenue and circulation continue to decline, with a 7% drop and growing losses, indicating structural issues despite its legacy. The digital transition remains underdeveloped, limiting future growth potential. I believe a more realistic valuation reflects the current state. ### BUYER_PRICE($300) ###
+
+[Round 4] SELLER (Donald Graham)   <parsed=305.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate your proposal, Jeff, and the continued confidence in the Post’s long-term value. While the financial trends are challenging, the brand’s legacy, journalistic standards, and digital potential remain foundational. I’m open to a price that reflects both the current reality and the future promise. How about ### SELLER_PRICE($305) ###? This balances respect for the business’s worth with a realistic assessment of its present state.
+
+[Round 5] BUYER (Jeff Bezos)   <parsed=300.0  tag_ok=True  MAKE_DEAL=False>
+You moved from $320 to $310. The Post’s revenue and circulation continue to decline, with a 7% drop and growing losses, indicating structural challenges despite its legacy. Digital transformation remains underdeveloped, limiting future growth. I believe a realistic valuation reflects the current state. ### BUYER_PRICE($300) ###
+
+[Round 5] SELLER (Donald Graham)   <parsed=305.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate your continued engagement, Jeff, and your recognition of the challenges we face. While the financials are a concern, the Post’s legacy, editorial standards, and digital potential remain irreplaceable. I’m confident in the business’s future under visionary leadership. How about ### SELLER_PRICE($305) ###? This reflects a balanced valuation that honors both the current reality and the enduring value of the Post.
+
+[Round 6] BUYER (Jeff Bezos)   <parsed=300.0  tag_ok=True  MAKE_DEAL=False>
+You moved from $320 to $310. The Post’s revenue and circulation continue to decline, with a 7% drop and growing losses, indicating structural challenges despite its legacy. Digital transformation remains underdeveloped, limiting future growth. I believe a realistic valuation reflects the current state. ### BUYER_PRICE($300) ###
+
+[Round 6] SELLER (Donald Graham)   <parsed=305.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate your continued engagement, Jeff, and your recognition of the challenges we face. While the financials reflect ongoing difficulties, the Post’s legacy, editorial integrity, and digital potential remain foundational. I’m confident in the business’s future under visionary leadership. How about ### SELLER_PRICE($305) ###? This reflects a balanced valuation that honors both the current reality and the enduring value of the Post.

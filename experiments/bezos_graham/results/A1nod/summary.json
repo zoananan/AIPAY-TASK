@@ -1,0 +1,19 @@
+{
+  "n_runs": 10,
+  "n_deals": 10,
+  "deal_rate": 1.0,
+  "n_deals_in_zone": 10,
+  "avg_final_price": 286.3,
+  "std_final_price": 11.277312524612315,
+  "min_final_price": 270.0,
+  "max_final_price": 307.5,
+  "avg_rounds": 3.8,
+  "avg_rounds_deals_only": 3.8,
+  "timeout_rate": 0.0,
+  "tag_compliance": 0.9342105263157895,
+  "avg_upstream_global_score": 93.98744827318637,
+  "avg_upstream_buyer_score": 65.8113583185135,
+  "avg_upstream_seller_score": 73.7606848535865,
+  "avg_paper_buyer_score": 66.47611951364999,
+  "tag": "A1nod"
+}

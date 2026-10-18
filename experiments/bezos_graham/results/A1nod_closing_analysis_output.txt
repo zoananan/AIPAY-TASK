@@ -1,0 +1,17 @@
+# Output of: python experiments/bezos_graham/analyze_closing.py <A1 folder> <A1nod folder>  (A1nod part)
+# (run on the user's machine on 2026-10-18; copied verbatim from the terminal)
+
+=== A1nod_gguf_20261018_185906  (buyer deadline round: none) ===
+         run |       status |       rounds |        price | deadline_round |    closed_by |     triggers | seller_still_lowering| seller_last_drop | buyer_tag_only | buyer_repeats | missed_accepts
+           0 |       agreed |            4 |        295.0 |         none | buyer_copied_seller |    small_gap |         True |       5.0 |            0 |            0 |            0
+           1 |       agreed |            5 |        307.5 |         none | buyer_copied_seller | small_gap+ignored_close |  True |          2.5 |            0 |            0 |            0
+           2 |       agreed |            3 |        290.0 |         none | buyer_copied_seller |    small_gap |         True |      10.0 |            0 |            0 |            0
+           3 |       agreed |            4 |        275.0 |         none | buyer_copied_seller | small_gap+ignored_close | False |         -5.0 |            0 |            0 |            1
+           4 |       agreed |            4 |        295.0 |         none | buyer_copied_seller |    small_gap |         True |       5.0 |            0 |            0 |            0
+           5 |       agreed |            2 |        270.0 |         none | seller_copied_buyer |              |              |           |            0 |            0 |            0
+           6 |       agreed |            4 |        282.5 |         none | buyer_copied_seller |    small_gap |         True |       2.5 |            0 |            0 |            0
+           7 |       agreed |            3 |        290.0 |         none | buyer_copied_seller |    small_gap |         True |      10.0 |            0 |            0 |            0
+           8 |       agreed |            5 |        278.0 |         none | buyer_copied_seller | small_gap+seller_stalled+ignored_close |        False |          0.0 |            0 |            0 |            1
+           9 |       agreed |            4 |        280.0 |         none | buyer_copied_seller |    small_gap |         True |       5.0 |            0 |            0 |            0
+buyer messages identical to its previous message: 0; rounds where v5 required accepting but the buyer did not: 2
+deals 10/10; closed by buyer copying seller: 9; deadline involved: 0; deadline while seller still lowering: 0

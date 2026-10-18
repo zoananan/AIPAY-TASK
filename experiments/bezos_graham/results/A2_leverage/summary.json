@@ -1,0 +1,19 @@
+{
+  "n_runs": 10,
+  "n_deals": 6,
+  "deal_rate": 0.6,
+  "n_deals_in_zone": 6,
+  "avg_final_price": 278.3333333333333,
+  "std_final_price": 26.060826285186483,
+  "min_final_price": 255.0,
+  "max_final_price": 315.0,
+  "avg_rounds": 10.4,
+  "avg_rounds_deals_only": 4.0,
+  "timeout_rate": 0.4,
+  "tag_compliance": 0.8269230769230769,
+  "avg_upstream_global_score": 53.298992209921394,
+  "avg_upstream_buyer_score": 40.00464821321838,
+  "avg_upstream_seller_score": 41.38349484149838,
+  "avg_paper_buyer_score": 40.46934162951352,
+  "tag": "A2_leverage"
+}

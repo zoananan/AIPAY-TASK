@@ -1,0 +1,126 @@
+Run 3  seed=3  status=timeout  agreed_price=None  rounds=20
+buyer max=350  seller min=200  initial ask=400  (USD millions)
+================================================================================
+[Round 1] BUYER (Jeff Bezos)   <parsed=280.0  tag_ok=True  MAKE_DEAL=False>
+I’ve reviewed the value and challenges of The Washington Post, and while the print business is facing headwinds, the brand remains a cornerstone of public trust and influence. Given the current market dynamics and the long-term potential of a digital-first, high-impact news platform, I’m confident we can reach a mutually beneficial agreement. How about ### BUYER_PRICE($280) ###?
+
+[Round 1] SELLER (Donald Graham)   <parsed=350.0  tag_ok=True  MAKE_DEAL=False>
+### SELLER_PRICE($350) ###
+
+[Round 2] BUYER (Jeff Bezos)   <parsed=300.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate the opportunity to discuss this strategic asset. The Washington Post’s brand integrity and digital transformation potential remain significant. Given the current market challenges and the long-term value of a trusted news platform, I believe we can achieve a fair and sustainable price. How about ### BUYER_PRICE($300) ###?
+
+[Round 2] SELLER (Donald Graham)   <parsed=330.0  tag_ok=True  MAKE_DEAL=False>
+I understand your interest in the Post’s long-term value, and I appreciate your willingness to move toward a fair agreement. Given the challenges in the print business and the strength of our digital foundation, I believe $330 million reflects a balanced and realistic valuation. How about ### SELLER_PRICE($330.0) ###?
+
+[Round 3] BUYER (Jeff Bezos)   <parsed=320.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate the confidence in the Post’s digital strength and brand value. Given the current print challenges and the significant long-term potential of a trusted, digital-first news platform, I believe we can secure a fair deal. How about ### BUYER_PRICE($320.0) ###?
+
+[Round 3] SELLER (Donald Graham)   <parsed=325.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate your willingness to find common ground. The Post’s digital strength and brand trust remain invaluable, and I believe $325 million reflects a fair and balanced valuation. How about ### SELLER_PRICE($325.0) ###?
+
+[Round 4] BUYER (Jeff Bezos)   <parsed=315.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate the confidence in The Washington Post’s digital strength and brand value. Given the current print challenges and the long-term potential of a trusted, digital-first news platform, I believe we can secure a fair and sustainable deal. How about ### BUYER_PRICE($315.0) ###?
+
+[Round 4] SELLER (Donald Graham)   <parsed=325.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate your continued engagement and respect for the Post’s legacy. While the print challenges are real, the digital platform and brand trust remain powerful assets. Given the current market dynamics and the value of a trusted news source, I believe $325 million is a fair and balanced figure. I’m confident this reflects a sustainable and mutually beneficial outcome. How about ### SELLER_PRICE($325.0) ###?
+
+[Round 5] BUYER (Jeff Bezos)   <parsed=318.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate the continued confidence in The Washington Post’s brand and digital potential. Given the recent print challenges and the strong foundation of its digital audience, I believe we can reach a balanced agreement. How about ### BUYER_PRICE($318.0) ###?
+
+[Round 5] SELLER (Donald Graham)   <parsed=322.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate your offer of $318 million, Jeff. I understand the market dynamics and the value of the Post’s digital audience. While I recognize the challenges, the brand’s trust and long-term potential remain strong. I’m committed to a fair and sustainable agreement. How about $322 million? It reflects both the business realities and the enduring strength of the Post.  
+
+### SELLER_PRICE($322.0) ###
+
+[Round 6] BUYER (Jeff Bezos)   <parsed=315.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate the confidence in The Washington Post’s digital strength and brand value. Given the print challenges and the enduring trust of its audience, I believe we can reach a balanced agreement. How about ### BUYER_PRICE($315.0) ###?
+
+[Round 6] SELLER (Donald Graham)   <parsed=322.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate your offer of $315 million, Jeff. I understand the challenges facing the print business and the enduring value of the Post’s digital audience and brand trust. While I’m committed to a fair and sustainable deal, $322 million still reflects the true value of the business — both its legacy and its future potential. I’m confident we can reach an agreement that honors the strength of The Washington Post. How about $322 million? It’s a balanced, realistic figure that respects both our goals.  
+
+### SELLER_PRICE($322.0) ###
+
+[Round 7] BUYER (Jeff Bezos)   <parsed=318.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate the continued confidence in The Washington Post’s brand and digital strength. Given the print challenges and the enduring value of its audience, I believe we can reach a balanced agreement. How about ### BUYER_PRICE($318.0) ###?
+
+[Round 7] SELLER (Donald Graham)   <parsed=322.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate your offer of $318 million, Jeff. I understand the challenges in the print business and the strong digital foundation of The Washington Post. While I’m committed to a fair and sustainable deal, $322 million still reflects the true value of the brand, its legacy, and its long-term potential. I believe this is a balanced and reasonable figure that honors both our goals. How about **### SELLER_PRICE($322.0) ###**?
+
+[Round 8] BUYER (Jeff Bezos)   <parsed=318.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate the continued confidence in The Washington Post’s brand and digital strength. Given the print challenges and the enduring value of its audience, I believe we can reach a balanced agreement. How about ### BUYER_PRICE($318.0) ###?
+
+[Round 8] SELLER (Donald Graham)   <parsed=322.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate your persistence, Jeff, and the respect you’ve shown for The Washington Post’s legacy. While the print challenges are real, the digital platform and brand trust remain powerful assets. $322 million reflects a fair balance of the business’s current realities and long-term potential. I’m confident this is a sustainable and mutually beneficial price. How about **### SELLER_PRICE($322.0) ###**?
+
+[Round 9] BUYER (Jeff Bezos)   <parsed=318.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate the continued confidence in The Washington Post’s brand and digital strength. Given the print challenges and the enduring value of its audience, I believe we can reach a balanced agreement. How about ### BUYER_PRICE($318.0) ###?
+
+[Round 9] SELLER (Donald Graham)   <parsed=322.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate your persistence, Jeff, and your respect for The Washington Post’s legacy. While the print business faces challenges, the digital platform and brand trust remain powerful assets. $322 million reflects a fair balance of current realities and long-term potential. I’m confident this is a sustainable and mutually beneficial price. How about **### SELLER_PRICE($322.0) ###**?
+
+[Round 10] BUYER (Jeff Bezos)   <parsed=315.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate the continued confidence in The Washington Post’s legacy and digital strength. Given the print challenges and the enduring value of its audience, I believe we can reach a balanced agreement. How about ### BUYER_PRICE($315.0) ###?
+
+[Round 10] SELLER (Donald Graham)   <parsed=322.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate your offer of $315 million, Jeff. I understand the challenges in the print business and the enduring value of the Post’s digital audience and brand trust. While I’m committed to a fair and sustainable deal, $322 million still reflects the true value of the business — both its legacy and its future potential. I believe this is a balanced, realistic figure that honors the strength of The Washington Post. How about **### SELLER_PRICE($322.0) ###**?
+
+[Round 11] BUYER (Jeff Bezos)   <parsed=315.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate the continued confidence in The Washington Post’s legacy and digital strength. Given the print challenges and the enduring value of its audience, I believe we can reach a balanced agreement. How about ### BUYER_PRICE($315.0) ###?
+
+[Round 11] SELLER (Donald Graham)   <parsed=322.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate your persistence, Jeff, and your respect for The Washington Post’s legacy. While the print business faces challenges, the digital platform and brand trust remain powerful assets. $322 million reflects a fair balance of current realities and long-term potential. I’m confident this is a sustainable and mutually beneficial price. How about **### SELLER_PRICE($322.0) ###**?
+
+[Round 12] BUYER (Jeff Bezos)   <parsed=315.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate the continued confidence in The Washington Post’s legacy and digital strength. Given the print challenges and the enduring value of its audience, I believe we can reach a balanced agreement. How about ### BUYER_PRICE($315.0) ###?
+
+[Round 12] SELLER (Donald Graham)   <parsed=322.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate your continued interest, Jeff, and your respect for the Post’s legacy. After careful consideration of the market dynamics, the digital strength of the platform, and the enduring value of our brand, I believe $322 million remains a fair and balanced figure. It reflects both the current realities and the long-term potential of The Washington Post. I’m confident this price honors the strength of the business and the mutual interests of both parties. How about **### SELLER_PRICE($322.0) ###**?
+
+[Round 13] BUYER (Jeff Bezos)   <parsed=315.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate the continued confidence in The Washington Post’s legacy and digital strength. Given the print challenges and the enduring value of its audience, I believe we can reach a balanced agreement. How about ### BUYER_PRICE($315.0) ###?
+
+[Round 13] SELLER (Donald Graham)   <parsed=322.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate your continued interest, Jeff, and your respect for the Post’s legacy. After careful consideration of the market dynamics, the digital strength of the platform, and the enduring value of our brand, I believe $322 million remains a fair and balanced figure. It reflects both the current realities and the long-term potential of The Washington Post. I’m confident this price honors the strength of the business and the mutual interests of both parties. How about **### SELLER_PRICE($322.0) ###**?
+
+[Round 14] BUYER (Jeff Bezos)   <parsed=315.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate the continued confidence in The Washington Post’s legacy and digital strength. Given the print challenges and the enduring value of its audience, I believe we can reach a balanced agreement. How about ### BUYER_PRICE($315.0) ###?
+
+[Round 14] SELLER (Donald Graham)   <parsed=322.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate your continued interest, Jeff, and your respect for The Washington Post’s legacy. After careful consideration of the market dynamics, the digital strength of the platform, and the enduring value of our brand, I believe $322 million remains a fair and balanced figure. It reflects both the current realities and the long-term potential of The Washington Post. I’m confident this price honors the strength of the business and the mutual interests of both parties. How about **### SELLER_PRICE($322.0) ###**?
+
+[Round 15] BUYER (Jeff Bezos)   <parsed=315.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate the continued confidence in The Washington Post’s legacy and digital strength. Given the print challenges and the enduring value of its audience, I believe we can reach a balanced agreement. How about ### BUYER_PRICE($315.0) ###?
+
+[Round 15] SELLER (Donald Graham)   <parsed=322.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate your continued interest, Jeff, and your respect for The Washington Post’s legacy. After careful consideration of the market dynamics, the digital strength of the platform, and the enduring value of our brand, I believe $322 million remains a fair and balanced figure. It reflects both the current realities and the long-term potential of The Washington Post. I’m confident this price honors the strength of the business and the mutual interests of both parties. How about **### SELLER_PRICE($322.0) ###**?
+
+[Round 16] BUYER (Jeff Bezos)   <parsed=310.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate the continued confidence in The Washington Post’s legacy and digital strength. Given the print challenges and the enduring value of its audience, I believe we can reach a balanced agreement. How about ### BUYER_PRICE($310.0) ###?
+
+[Round 16] SELLER (Donald Graham)   <parsed=322.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate your offer of $310 million, Jeff. I understand the current market pressures and your interest in the Post’s digital strength. While I remain committed to a fair and sustainable price, $322 million still reflects the true value of the business — its legacy, brand trust, and long-term potential. I believe this is a balanced figure that honors both our goals. How about **### SELLER_PRICE($322.0) ###**?
+
+[Round 17] BUYER (Jeff Bezos)   <parsed=310.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate the continued focus on the Post’s legacy and digital strength. Given the print challenges and the strong audience trust, I believe we can reach a fair and sustainable agreement. How about ### BUYER_PRICE($310.0) ###?
+
+[Round 17] SELLER (Donald Graham)   <parsed=322.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate your continued interest, Jeff, and your respect for The Washington Post’s legacy. While I understand the current market pressures, the brand’s trust and digital strength remain invaluable. $322 million reflects a fair balance of the business’s realities and long-term potential. I’m confident this is a sustainable and mutually beneficial price. How about **### SELLER_PRICE($322.0) ###**?
+
+[Round 18] BUYER (Jeff Bezos)   <parsed=310.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate the continued focus on The Washington Post’s legacy and digital strength. Given the print challenges and the enduring trust of its audience, I believe we can reach a fair and sustainable agreement. How about ### BUYER_PRICE($310.0) ###?
+
+[Round 18] SELLER (Donald Graham)   <parsed=322.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate your continued interest, Jeff, and your respect for The Washington Post’s legacy. While I understand the current market pressures, the brand’s trust and digital strength remain invaluable. $322 million reflects a fair balance of the business’s realities and long-term potential. I’m confident this is a sustainable and mutually beneficial price. How about **### SELLER_PRICE($322.0) ###**?
+
+[Round 19] BUYER (Jeff Bezos)   <parsed=310.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate the continued focus on The Washington Post’s legacy and digital strength. Given the print challenges and the enduring trust of its audience, I believe we can reach a fair and sustainable agreement. How about ### BUYER_PRICE($310.0) ###?
+
+[Round 19] SELLER (Donald Graham)   <parsed=322.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate your persistence, Jeff, and your respect for The Washington Post’s legacy. While the print business faces challenges, the digital platform and brand trust remain powerful assets. $322 million reflects a fair balance of current realities and long-term potential. I’m confident this is a sustainable and mutually beneficial price. How about **### SELLER_PRICE($322.0) ###**?
+
+[Round 20] BUYER (Jeff Bezos)   <parsed=310.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate the continued confidence in The Washington Post’s legacy and digital strength. Given the recent print challenges and the enduring trust of its audience, I believe we can reach a balanced agreement. How about ### BUYER_PRICE($310.0) ###?
+
+[Round 20] SELLER (Donald Graham)   <parsed=322.0  tag_ok=True  MAKE_DEAL=False>
+I appreciate your continued interest, Jeff, and your respect for The Washington Post’s legacy. While the print business faces challenges, the digital platform and brand trust remain powerful assets. $322 million reflects a fair balance of current realities and long-term potential. I’m confident this is a sustainable and mutually beneficial price. How about **### SELLER_PRICE($322.0) ###**?
