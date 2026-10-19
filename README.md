@@ -30,6 +30,8 @@
 | [`docs/03_任务第1部分_人物资料与来源.md`](docs/03_任务第1部分_人物资料与来源.md) | 第 1 部分：资料抓取流程、来源、筛选规则、加入的事实 |
 | [`docs/04_任务第2部分_买方prompt设计.md`](docs/04_任务第2部分_买方prompt设计.md) | 第 2 部分：prompt 设计、迭代过程、结果与机制分析 |
 | [`docs/05_实验报告.md`](docs/05_实验报告.md) / [`docs/05_report_en.md`](docs/05_report_en.md) | 完整报告（中文 / English），含真实场景下的问题讨论 |
+| [`docs/06_补充研究思考.md`](docs/06_补充研究思考.md) / [`docs/06_supplementary_notes_en.md`](docs/06_supplementary_notes_en.md) | 补充研究思考（中文 / English）：中间价与纳什议价、多方市场剩余、因果解释与样本量、算力与可扩展性、博弈论分析框架 |
+| [`docs/word/`](docs/word/) | 05、06 两份报告的 Word 版（由 Markdown 用 pandoc 转换） |
 
 ## 复现 / Reproduce（Windows PowerShell，CPU 即可）
 
